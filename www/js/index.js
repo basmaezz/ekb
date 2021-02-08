@@ -52,7 +52,7 @@ app.get_featured = function(){
                     for (let x = 0; x < category.topics.length; x++) {
                         const topic = category.topics[x];
                         if(topic.featured == true){
-                            featured_html += '<div class="topic_wrapper" topic-id="'+topic.id+'">'+ topic.title +'</div>'
+                            featured_html += '<div class="topic_wrapper" data-topic-id="'+topic.id+'">'+ topic.title +'</div>'
                         }
                     }
                 }
@@ -64,9 +64,35 @@ app.get_featured = function(){
         },
     })
 }
+app.get_category_topics = function(category_id){
+    $.ajax({
+        url: 'db.json',
+        type: 'GET',
+        // contentType: 'application/json',
+        success: function(data) {
+            if (data){
+                // var categordata[0]
+                var topics_html = ''
+                for (var i = 0; i < data.length; i++) {
+                    var category = data[i];
+                    if( category.id == category_id){
+                        for (let x = 0; x < category.topics.length; x++) {
+                            const topic = category.topics[x];
+                            topics_html += '<div class="topic_wrapper" data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+ topic.title +'</div>'
+                        }    
+                    }
+                }
+                $('.topics_wrapper').html(topics_html)
+            } else {
+                $('.topics_wrapper').html('<div class="no_results">Sorry, No results found</div>')
+            }
+        },
+    })
+  
+}
 //////////
 
-app.get_content = function(){
+app.get_topic_content = function(topic_id){
     console.log('send ajax ')
     $.ajax({
         url: 'db.json',
@@ -74,13 +100,13 @@ app.get_content = function(){
         success: function(data) {
             if (data){
                 // var categordata[0]
-                var content_html = ''
+                var content_html;
                 for (var i = 0; i < data.length; i++) {
                     var category = data[i];
                     for (let x = 0; x < category.topics.length; x++) {
                         const topic = category.topics[x];
-                        if(topic.featured == true){
-                            content_html += '<div class="topic_wrapper" topic-id="'+topic.id+'">'+ topic.content +'</div>'
+                        if(topic.id == topic_id){
+                            content_html = topic.content
                         }
                     }
                 }
@@ -96,7 +122,6 @@ app.get_content = function(){
 ///////////////
 
 
-var test;
 // Main Logic 
 app.initialize = (function(_super) {
     return function() {
@@ -109,7 +134,7 @@ app.initialize = (function(_super) {
                     $(document).on('click', '.category_wrapper', function(e){
                         var el = e.target
                         // ons.notification.alert($(el).attr('category-name'))
-                        ekbNav.pushPage('topic.html',{
+                        ekbNav.pushPage('category.html',{
                             data: {
                               category_id: $(el).attr('data-category-id'),
                               category_name: $(el).attr('data-category-name'),
@@ -132,13 +157,44 @@ app.onDeviceReady = (function(_super) {
         // define all cordova related events
         document.addEventListener('init', function(event) {
             if (event.target.matches('#topic')) {
+                var topic_id = ekbNav.topPage.data.topic_id
+                var topic_title = ekbNav.topPage.data.topic_title
+                $('#topic .toolbar__title').html(topic_title)
+                app.get_topic_content(topic_id)
+            }
+        }, false);
+
+        // End of new code
+        return _super.apply(this, arguments);
+    };         
+
+})(app.onDeviceReady);
+
+// // Category Logic
+app.onDeviceReady = (function(_super) {
+    return function() {
+        // New Code
+        // define all cordova related events
+        document.addEventListener('init', function(event) {
+            if (event.target.matches('#category')) {
                 console.log(ekbNav.topPage.data.category_name)
                 var category_id = ekbNav.topPage.data.category_id
                 var category_name = ekbNav.topPage.data.category_name
-                $('#topic .toolbar__title').html(category_name)
-                // document.getElementById('topic').getElementsByClassName('toolbar__title')[0].innerHTML = category_name
+                $('#category .toolbar__title').html(category_name)
+                app.get_category_topics(category_id)
             }
         }, false);
+        $(document).on('click','.topic_wrapper', function(e){
+            var el = e.target
+            var topic_id = $(el).attr('data-topic-id')
+            var topic_title = $(el).attr('data-topic-title')
+            ekbNav.pushPage('topic.html',{
+                data:{
+                    topic_id: topic_id,
+                    topic_title: topic_title
+                }
+            })
+        })
 
         // End of new code
         return _super.apply(this, arguments);
