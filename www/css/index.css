@@ -1,3 +1,29 @@
+@font-face {
+    font-family: 'Almarai Bold';
+    src: url('Almarai-Bold.ttf');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Almarai Light';
+    src: url('Almarai-Light.ttf');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Almarai Regular';
+    src: url('Almarai-Regular.ttf');
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+*:not(ons-icon){
+    font-family: 'Almarai Regular' !important;
+}
+
 .category_wrapper {
     display: inline-flex;
     width: 50%;
@@ -24,6 +50,13 @@
     direction: rtl;
     text-align: right;
 }
+ons-row#search_wrapper ons-card {
+    width: 100%;
+    text-align: right;
+}
+ons-row#search_wrapper .topic_wrapper {
+    width: 100%;
+}
 .content_image {
     width: 80%;
     margin: 0 auto;
@@ -37,6 +70,12 @@ ons-row#content_wrapper {
 }
 ons-toolbar.toolbar {
     background: #66a4ec;
+    color: white;
+}
+ons-toolbar.toolbar .center {
+    color: white;
+}
+ons-toolbar-button.back_btn.toolbar-button {
     color: white;
 }
 ons-search-input.search {
@@ -53,9 +92,21 @@ ons-search-input.search input::placeholder {
     height: 90%;
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    flex-direction: column;
     align-items: center;
 }
 div#categories_wrapper {
     margin-top: 5px;
+}
+ons-card.card {
+    color: #66a4ec;
+    text-align: center;
+
+}
+ons-card.card ons-icon {
+    font-size: xx-large;
+}
+img.content_image {
+    border-radius: 14%;
 }
