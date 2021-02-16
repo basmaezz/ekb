@@ -110,3 +110,23 @@ ons-card.card ons-icon {
 img.content_image {
     border-radius: 14%;
 }
+#preface .page__content {
+    background: url(../img/splash-screen.png) !important;
+    background-size: cover !important;
+}
+
+#preface .button_wrapper{
+    position: absolute;
+    bottom: 0;
+    height: 90px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#preface .button_wrapper ons-button.button {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+}

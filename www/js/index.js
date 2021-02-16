@@ -42,7 +42,7 @@ app.get_featured = function(){
             for (let x = 0; x < category.topics.length; x++) {
                 const topic = category.topics[x];
                 if(topic.featured == true){
-                    featured_html += '<div class="topic_wrapper" ><ons-card data-topic-id="'+topic.id+'">'+ topic.title +'</ons-card></div>'
+                    featured_html += '<div class="topic_wrapper"><ons-card data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+ topic.title +'</ons-card></div>'
                     console.log(featured_html);
                 }
             }
@@ -65,7 +65,7 @@ app.get_category_topics = function(category_id){
             if( category.id == category_id){
                 for (let x = 0; x < category.topics.length; x++) {
                     const topic = category.topics[x];              
-                    topics_html += '<div class="topic_wrapper" ><ons-card data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+ topic.title +'</ons-card></div></br>'
+                    topics_html += '<div class="topic_wrapper" ><ons-card data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+ topic.title +'</ons-card></div>'
                 }    
             }
         }
@@ -106,8 +106,8 @@ app.get_search=function(txt_search) {
         // });
         app.content.forEach(function(category){
             category.topics.forEach(function(topic){
-                if (topic.title.includes(txt_search)){
-                    topics_html += '<div class="topic_wrapper" ><ons-card data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+topic.title+'</ons-card>'
+                if (topic.title.toLowerCase().includes(txt_search.toLowerCase()) ){
+                    topics_html += '<div class="topic_wrapper" ><ons-card data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+topic.title+'</ons-card></div>'
                 }
             })
         })
