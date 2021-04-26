@@ -136,12 +136,6 @@ img.content_image {
     justify-content: center;
     align-items: center;
 }
-.page__background{
-    background-image: url(../img/imgs/egypt.png);
-    opacity: 0.2;
-    position: center;
-    background-position-y: bottom;
-}
 #preface .button_wrapper ons-button.button {
     width: 80%;
     display: flex;
@@ -158,4 +152,47 @@ img.content_image {
 ons-page#main .page__background {
     background: #1cd29b ;
 
+}
+#category .page__background, #topic .page__background {
+    background-image: url(../img/imgs/egypt.png);
+    opacity: 0.2;
+    position: center;
+    background-position-y: bottom;
+}
+.content_wrapper {
+    height: calc(100% - 84px);
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+    padding: 20px;
+
+}
+
+.topic_nav_wrapper {
+    height: 44px;
+    width: 100%;
+    background: transparent;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    direction: rtl;
+}
+.nav_btn_wrapper {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.topic_nav_btn {
+    height: 80%;
+    width: 80%;
+    background: #1cd29b;
+    display: flex;
+    color: white;
+    justify-content: center;
+    align-items: center;
+}
+.hidden{
+    display: none;
 }

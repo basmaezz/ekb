@@ -1,3 +1,4 @@
+
 var app = {
     // Application varructor
     initialize: function() { 
@@ -65,11 +66,19 @@ app.get_category_topics = function(category_id){
             if( category.id == category_id){
                 for (let x = 0; x < category.topics.length; x++) {
                     const topic = category.topics[x]; 
-                    if(JSON.stringify(topic).includes('color')){
+                    if(topic.color){
+                        if (topic.parent_topic){
+                            topics_html += '<div  class="topic_wrapper parent_topic" ><ons-card style=" color:white;background:'+topic.color+'" data-category-id="'+category_id+'" data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+ topic.title +'</ons-card></div>'
+                        } else {
+                            topics_html += '<div  class="topic_wrapper" ><ons-card style=" color:white;background:'+topic.color+'" data-category-id="'+category_id+'" data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+ topic.title +'</ons-card></div>'
+                        }
                         // console.log(topic.color)
-                        topics_html += '<div  class="topic_wrapper" ><ons-card style=" color:white;background:'+topic.color+'" data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+ topic.title +'</ons-card></div>'
                     } else {
-                        topics_html += '<div class="topic_wrapper" ><ons-card data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+ topic.title +'</ons-card></div>'
+                        if (topic.parent_topic){
+                            topics_html += '<div class="topic_wrapper parent_topic" ><ons-card data-category-id="'+category_id+'" data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+ topic.title +'</ons-card></div>'
+                        } else {
+                            topics_html += '<div class="topic_wrapper" ><ons-card data-category-id="'+category_id+'" data-topic-id="'+topic.id+'" data-topic-title="'+topic.title+'">'+ topic.title +'</ons-card></div>'
+                        }
                     }        
                 }    
             }
@@ -93,28 +102,61 @@ app.get_topic_content = function(topic_id){
             for (let x = 0; x < category.topics.length; x++) {
                 const topic = category.topics[x];
                 if(topic.id == topic_id){
-                    if('pages' in topic){
-                        console.log('has pages')
-                        if(topic.pages.length > 1){
+                    app.active_topic = {'id':topic.id,'title':topic.title,'parent_topic':topic.parent_topic,'child_topics':topic.child_topics}
+                    if (!app.active_topic.parent_topic){
+                        if(topic.pages.length >= 1){
+                            app.active_topic.pages = []
+                            for (let i = 0; i < topic.pages.length; i++) {
+                                const page = topic.pages[i];
+                                app.active_topic.pages.push({'page_id': page.id, 'page_content': page.content})
+                            }
                             content_html += topic.pages[0].content
-                            $('.content_wrapper').append('<ons-row> <ons-col> <div class="topic_nav_wrapper"> <div class="topic_nav_btn prev" hidden></div> <div class="topic_nav_btn next" hidden></div> </div> </ons-col> </ons-row>')    
+                            $('#topic .content_wrapper').html(content_html)
+                            app.active_page_number = 0
+                            $('#topic .page__content').append('<div class="topic_nav_wrapper"><div class="nav_btn_wrapper"><div class="topic_nav_btn prev hidden">السابق</div></div><div class="nav_btn_wrapper"><div class="topic_nav_btn next">التالي</div></div> </div>')    
                         } else{
-                            content_html += topic.pages[0].content     
-                        }
+                            $('#topic .content_wrapper').html(content_html)
+                        }    
                     } else {
-                        content_html += topic.content   
+                        for (let i = 0; i < app.active_topic.child_topics.length; i++) {
+                            const topic = app.active_topic.child_topics[i];
+                            
+                        }
                     }
                 }
                 // console.log(content_html)
             }
         }
         // console.log(content_html)
-        $('#content_wrapper').html(content_html)
     } else {
-        $('#content_wrapper').html('<div class="no_results">Sorry, No results found</div>')
+        $('#topic .content_wrapper').html('<div class="no_results">Sorry, No results found</div>')
     }
 }
-app.get_search=function(txt_search) {
+app.click_topic_next_page = function(){
+    // var content_html = app.cont
+    app.active_page_number =  app.active_page_number + 1
+    if(app.active_topic.pages.length == app.active_page_number + 1){
+        $('.topic_nav_btn.next').addClass('hidden')
+        $('.topic_nav_btn.prev').removeClass('hidden')
+    } else {
+        $('.topic_nav_btn.prev').removeClass('hidden')
+    }
+    var content = app.active_topic.pages[app.active_page_number].page_content
+    $('#topic .content_wrapper').html(content)
+}
+app.click_topic_prev_page = function(){
+    app.active_page_number =  app.active_page_number - 1
+    if(app.active_page_number == 0){
+        $('.topic_nav_btn.prev').addClass('hidden')
+        $('.topic_nav_btn.next').removeClass('hidden')
+    } else {
+        $('.topic_nav_btn.next').removeClass('hidden')
+    }
+    var content = app.active_topic.pages[app.active_page_number].page_content
+    $('#topic .content_wrapper').html(content)
+}
+
+app.get_search = function(txt_search) {
     if(txt_search != ''){
         var topics_html = ''
         // app.content.array.forEach(element => {
@@ -147,6 +189,8 @@ app.initialize = (function(_super) {
     return function() {
         // New Code
         // Mainly we define event listeners
+            $(document).on('click', '.topic_nav_btn.next', app.click_topic_next_page)
+            $(document).on('click', '.topic_nav_btn.prev', app.click_topic_prev_page)
             document.addEventListener('init', function(event) {
                 if (event.target.matches('#main')) {
                     app.get_categories()
@@ -180,8 +224,8 @@ app.onDeviceReady = (function(_super) {
         // define all cordova related events
         document.addEventListener('init', function(event) {
             if (event.target.matches('#topic')) {
-                var topic_id = ekbNav.topPage.data.topic_id
-                var topic_title = ekbNav.topPage.data.topic_title
+                var topic_id = ekbNav.topPage.data.id
+                var topic_title = ekbNav.topPage.data.title
                 $('#topic .toolbar__title').html(topic_title)
                 app.get_topic_content(topic_id)
             }
@@ -193,6 +237,48 @@ app.onDeviceReady = (function(_super) {
 
 })(app.onDeviceReady);
 
+app.get_child_topics = function(category_id, topic_id){
+    var data = app.content
+    // console.log(category_id)
+    if (data){
+        // console.log('h   ere is what we need')
+        console.log(data)
+        // var categordata[0]
+        var topics_html = ''
+        for (var i = 0; i < data.length; i++) {
+            var category = data[i];
+            if( category.id == category_id){
+                for (let x = 0; x < category.topics.length; x++) {
+                    const topic = category.topics[x]; 
+                    if (topic.id == topic_id){
+                        for (let i = 0; i < topic.child_topics.length; i++) {
+                            const child_topic = topic.child_topics[i];
+                            if(child_topic.color){
+                                if (child_topic.parent_topic){
+                                    topics_html += '<div  class="topic_wrapper parent_topic" ><ons-card style=" color:white;background:'+child_topic.color+'" data-topic-id="'+child_topic.id+'" data-topic-title="'+child_topic.title+'">'+ child_topic.title +'</ons-card></div>'
+                                } else {
+                                    topics_html += '<div  class="topic_wrapper" ><ons-card style=" color:white;background:'+child_topic.color+'" data-topic-id="'+child_topic.id+'" data-topic-title="'+child_topic.title+'">'+ child_topic.title +'</ons-card></div>'
+                                }
+                                // console.log(topic.color)
+                            } else {
+                                if (child_topic.parent_topic){
+                                    topics_html += '<div class="topic_wrapper parent_topic" ><ons-card data-topic-id="'+child_topic.id+'" data-topic-title="'+child_topic.title+'">'+ child_topic.title +'</ons-card></div>'
+                                } else {
+                                    topics_html += '<div class="topic_wrapper" ><ons-card data-topic-id="'+child_topic.id+'" data-topic-title="'+child_topic.title+'">'+ child_topic.title +'</ons-card></div>'
+                                }
+                            }       
+                        }
+                    }
+                }    
+            }
+        }
+        console.log(topics_html)
+        $('#parent_topic .topics_wrapper').html(topics_html)
+    } else {
+        $('#parent_topic .topics_wrapper').html('<div class="no_results">Sorry, No results found</div>')
+    }
+
+}
 // // Category Logic
 app.onDeviceReady = (function(_super) {
     return function() {
@@ -207,16 +293,36 @@ app.onDeviceReady = (function(_super) {
                 app.get_category_topics(category_id)
             }
         }, false);
-        $(document).on('click','.topic_wrapper', function(e){
-            var el = e.target
-            var topic_id = $(el).attr('data-topic-id')
-            var topic_title = $(el).attr('data-topic-title')
-            ekbNav.pushPage('topic.html',{
-                data:{
-                    topic_id: topic_id,
-                    topic_title: topic_title
-                }
-            })
+        document.addEventListener('init', function(event) {
+            if (event.target.matches('#parent_topic')) {
+                // console.log(ekbNav.topPage.data.category_name)
+                var category_id = ekbNav.topPage.data.category_id
+                var topic_id = ekbNav.topPage.data.id
+                var title = ekbNav.topPage.data.title
+                $('#parent_topic .toolbar__title').html(ekbNav.topPage.data.title)
+                app.get_child_topics(category_id, topic_id)
+            }
+        }, false);
+        $(document).on('click','.topic_wrapper', function(){
+            if($(this).hasClass('parent_topic')){
+                ekbNav.pushPage('parent_topic.html',
+                {
+                    data: {
+                      id: $(this).find('ons-card').attr('data-topic-id'),
+                      title: $(this).find('ons-card').attr('data-topic-title'),
+                      category_id: $(this).find('ons-card').attr('data-category-id'),
+                    }
+                })
+                console.log($(this).find('ons-card').attr('data-topic-title'))
+            } else {
+                ekbNav.pushPage('topic.html',{
+                    data:{
+                        id: $(this).find('ons-card').attr('data-topic-id'),
+                        title: $(this).find('ons-card').attr('data-topic-title'),
+                    }
+                })
+                console.log($(this).find('ons-card').attr('data-topic-title'))
+            }
         })
 
         // End of new code
@@ -352,6 +458,7 @@ app.content = [
         topics:[
             {
                 id:1,
+                color: false,
                 title:'نبذه عن بنك المعرفه',
                 pages:[
                     {
@@ -360,19 +467,29 @@ app.content = [
                     },
                  ],
                 featured:true,
-
             },
             {
                 id:2,
                 title:'إنشاء حساب على بنك المعرفه',
-                content:'<h3></h3><div class="gates_wrapper"> <div class="gate_wrapper"> <div class="gate_icon_wrapper education_gate"> <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="graduation-cap" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="svg-inline--fa fa-graduation-cap fa-w-20 fa-5x"><path fill="currentColor" d="M622.34 153.2L343.4 67.5c-15.2-4.67-31.6-4.67-46.79 0L17.66 153.2c-23.54 7.23-23.54 38.36 0 45.59l48.63 14.94c-10.67 13.19-17.23 29.28-17.88 46.9C38.78 266.15 32 276.11 32 288c0 10.78 5.68 19.85 13.86 25.65L20.33 428.53C18.11 438.52 25.71 448 35.94 448h56.11c10.24 0 17.84-9.48 15.62-19.47L82.14 313.65C90.32 307.85 96 298.78 96 288c0-11.57-6.47-21.25-15.66-26.87.76-15.02 8.44-28.3 20.69-36.72L296.6 284.5c9.06 2.78 26.44 6.25 46.79 0l278.95-85.7c23.55-7.24 23.55-38.36 0-45.6zM352.79 315.09c-28.53 8.76-52.84 3.92-65.59 0l-145.02-44.55L128 384c0 35.35 85.96 64 192 64s192-28.65 192-64l-14.18-113.47-145.03 44.56z" class=""></path></svg> </div> <div class="gate_title_wrapper"> بوابه القراء </div> </div> <div class="gate_wrapper"> <div class="gate_icon_wrapper children_gate"> <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="fort-awesome" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-fort-awesome fa-w-16 fa-7x"><path fill="currentColor" d="M489.2 287.9h-27.4c-2.6 0-4.6 2-4.6 4.6v32h-36.6V146.2c0-2.6-2-4.6-4.6-4.6h-27.4c-2.6 0-4.6 2-4.6 4.6v32h-36.6v-32c0-2.6-2-4.6-4.6-4.6h-27.4c-2.6 0-4.6 2-4.6 4.6v32h-36.6v-32c0-6-8-4.6-11.7-4.6v-38c8.3-2 17.1-3.4 25.7-3.4 10.9 0 20.9 4.3 31.4 4.3 4.6 0 27.7-1.1 27.7-8v-60c0-2.6-2-4.6-4.6-4.6-5.1 0-15.1 4.3-24 4.3-9.7 0-20.9-4.3-32.6-4.3-8 0-16 1.1-23.7 2.9v-4.9c5.4-2.6 9.1-8.3 9.1-14.3 0-20.7-31.4-20.8-31.4 0 0 6 3.7 11.7 9.1 14.3v111.7c-3.7 0-11.7-1.4-11.7 4.6v32h-36.6v-32c0-2.6-2-4.6-4.6-4.6h-27.4c-2.6 0-4.6 2-4.6 4.6v32H128v-32c0-2.6-2-4.6-4.6-4.6H96c-2.6 0-4.6 2-4.6 4.6v178.3H54.8v-32c0-2.6-2-4.6-4.6-4.6H22.8c-2.6 0-4.6 2-4.6 4.6V512h182.9v-96c0-72.6 109.7-72.6 109.7 0v96h182.9V292.5c.1-2.6-1.9-4.6-4.5-4.6zm-288.1-4.5c0 2.6-2 4.6-4.6 4.6h-27.4c-2.6 0-4.6-2-4.6-4.6v-64c0-2.6 2-4.6 4.6-4.6h27.4c2.6 0 4.6 2 4.6 4.6v64zm146.4 0c0 2.6-2 4.6-4.6 4.6h-27.4c-2.6 0-4.6-2-4.6-4.6v-64c0-2.6 2-4.6 4.6-4.6h27.4c2.6 0 4.6 2 4.6 4.6v64z" class=""></path></svg> </div> <div class="gate_title_wrapper"> بوابه الباحثين </div> </div> <div class="gate_wrapper"> <div class="gate_icon_wrapper researcher_gate"> <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="microscope" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-microscope fa-w-16 fa-3x"><path fill="currentColor" d="M160 320h12v16c0 8.84 7.16 16 16 16h40c8.84 0 16-7.16 16-16v-16h12c17.67 0 32-14.33 32-32V64c0-17.67-14.33-32-32-32V16c0-8.84-7.16-16-16-16h-64c-8.84 0-16 7.16-16 16v16c-17.67 0-32 14.33-32 32v224c0 17.67 14.33 32 32 32zm304 128h-1.29C493.24 413.99 512 369.2 512 320c0-105.88-86.12-192-192-192v64c70.58 0 128 57.42 128 128s-57.42 128-128 128H48c-26.51 0-48 21.49-48 48 0 8.84 7.16 16 16 16h480c8.84 0 16-7.16 16-16 0-26.51-21.49-48-48-48zm-360-32h208c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8H104c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8z" class=""></path></svg> </div> <div class="gate_title_wrapper"> بوابه الطلاب والمعلمين </div> </div> <div class="gate_wrapper"> <div class="gate_icon_wrapper readers_gate"> <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="books" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="svg-inline--fa fa-books fa-w-18 fa-3x"><path fill="currentColor" d="M575.11 443.25L461.51 19.06C458.2 6.7 445.61-3.18 430.15.96L414.7 5.1c-6.18 1.66-11.53 6.4-16.06 14.24-14.03 6.94-52.3 17.21-68 18.22-7.84-4.53-14.85-5.96-21.03-4.3l-15.46 4.14c-2.42.65-4.2 1.95-6.15 3.08V32c0-17.67-14.33-32-32-32h-64c-17.67 0-32 14.33-32 32v64h128l101.66 396.94c3.31 12.36 15.9 22.24 31.36 18.1l15.45-4.14c6.18-1.66 11.53-6.4 16.06-14.24 13.91-6.88 52.18-17.2 68-18.22 7.84 4.53 14.85 5.96 21.03 4.3l15.46-4.14c15.45-4.14 21.41-18.99 18.09-31.35zm-134.4-7.06L348.64 92.37l61.82-16.56 92.07 343.82-61.82 16.56zM0 384h128V128H0v256zM96 0H32C14.33 0 0 14.33 0 32v64h128V32c0-17.67-14.33-32-32-32zM0 480c0 17.67 14.33 32 32 32h64c17.67 0 32-14.33 32-32v-64H0v64zm160-96h128V128H160v256zm0 96c0 17.67 14.33 32 32 32h64c17.67 0 32-14.33 32-32v-64H160v64z" class=""></path></svg> </div> <div class="gate_title_wrapper"> بوابه الآطفال </div> </div> </div> <style> .gates_wrapper { display: flex; height: 100px; justify-content: center; align-items: center; width: 100%; background: white; border-radius:10px; margin-bottom:39px; margin-top:40px; } .gate_wrapper { width: 25%; display: flex; justify-content: space-between; align-items: center; flex-direction: column; height: 80%; } .gate_icon_wrapper { height: 50px; width: 50px; display: flex; border-radius: 50%; color: white; justify-content: center; align-items: center; } .gate_icon_wrapper.readers_gate { background: #ffc107; } .gate_icon_wrapper.researcher_gate { background: #e91e63; } .gate_icon_wrapper.children_gate { background: #2196f3; } .gate_icon_wrapper.education_gate { background: #4caf50; } .gate_icon_wrapper svg { max-width: 50%; } .gate_title_wrapper { text-align: center; } </style><p dir="rtl"><span style="font-size:20px"><em><strong></strong></em></span></p> <ol dir="rtl"> <li><span style="font-size:18px">اختر بوابة من البوابات الأربع التى تريدها كمستخدم للبنك (قارئ عام - معلم أو طالب مدرسى أو طالب جامعى - باحث أكاديمي جامعى - طفل )</span></li> <li><span style="font-size:18px">قم بكتابه بياناتك المطلوبه (بريدك الألكترونى - رقمك الثومى - أدراتك التعليميه فى حال المعلم - النطقه أى المديريه التعليميه فى حال المعلم - المدرسة)</span></li> <li><span style="font-size:18px">الباحثين الاكاديمين (أى العاملين بالجامعات والكليات من الأساتذه أو أعضاء هيئه التدريس ، لا يسمح لهم بالتسجيل الا من داخل الجامعه ذاتها وخط الانترنت بها . ثم بعد ذلك يمكنهم الدخول من أى مكان بالجمهورية).</span></li> </ol>',
+                color: false,
+                pages:[
+                    {
+                        id:1,
+                        content:'<h3></h3><div class="gates_wrapper"> <div class="gate_wrapper"> <div class="gate_icon_wrapper education_gate"> <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="graduation-cap" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="svg-inline--fa fa-graduation-cap fa-w-20 fa-5x"><path fill="currentColor" d="M622.34 153.2L343.4 67.5c-15.2-4.67-31.6-4.67-46.79 0L17.66 153.2c-23.54 7.23-23.54 38.36 0 45.59l48.63 14.94c-10.67 13.19-17.23 29.28-17.88 46.9C38.78 266.15 32 276.11 32 288c0 10.78 5.68 19.85 13.86 25.65L20.33 428.53C18.11 438.52 25.71 448 35.94 448h56.11c10.24 0 17.84-9.48 15.62-19.47L82.14 313.65C90.32 307.85 96 298.78 96 288c0-11.57-6.47-21.25-15.66-26.87.76-15.02 8.44-28.3 20.69-36.72L296.6 284.5c9.06 2.78 26.44 6.25 46.79 0l278.95-85.7c23.55-7.24 23.55-38.36 0-45.6zM352.79 315.09c-28.53 8.76-52.84 3.92-65.59 0l-145.02-44.55L128 384c0 35.35 85.96 64 192 64s192-28.65 192-64l-14.18-113.47-145.03 44.56z" class=""></path></svg> </div> <div class="gate_title_wrapper"> بوابه القراء </div> </div> <div class="gate_wrapper"> <div class="gate_icon_wrapper children_gate"> <svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="fort-awesome" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-fort-awesome fa-w-16 fa-7x"><path fill="currentColor" d="M489.2 287.9h-27.4c-2.6 0-4.6 2-4.6 4.6v32h-36.6V146.2c0-2.6-2-4.6-4.6-4.6h-27.4c-2.6 0-4.6 2-4.6 4.6v32h-36.6v-32c0-2.6-2-4.6-4.6-4.6h-27.4c-2.6 0-4.6 2-4.6 4.6v32h-36.6v-32c0-6-8-4.6-11.7-4.6v-38c8.3-2 17.1-3.4 25.7-3.4 10.9 0 20.9 4.3 31.4 4.3 4.6 0 27.7-1.1 27.7-8v-60c0-2.6-2-4.6-4.6-4.6-5.1 0-15.1 4.3-24 4.3-9.7 0-20.9-4.3-32.6-4.3-8 0-16 1.1-23.7 2.9v-4.9c5.4-2.6 9.1-8.3 9.1-14.3 0-20.7-31.4-20.8-31.4 0 0 6 3.7 11.7 9.1 14.3v111.7c-3.7 0-11.7-1.4-11.7 4.6v32h-36.6v-32c0-2.6-2-4.6-4.6-4.6h-27.4c-2.6 0-4.6 2-4.6 4.6v32H128v-32c0-2.6-2-4.6-4.6-4.6H96c-2.6 0-4.6 2-4.6 4.6v178.3H54.8v-32c0-2.6-2-4.6-4.6-4.6H22.8c-2.6 0-4.6 2-4.6 4.6V512h182.9v-96c0-72.6 109.7-72.6 109.7 0v96h182.9V292.5c.1-2.6-1.9-4.6-4.5-4.6zm-288.1-4.5c0 2.6-2 4.6-4.6 4.6h-27.4c-2.6 0-4.6-2-4.6-4.6v-64c0-2.6 2-4.6 4.6-4.6h27.4c2.6 0 4.6 2 4.6 4.6v64zm146.4 0c0 2.6-2 4.6-4.6 4.6h-27.4c-2.6 0-4.6-2-4.6-4.6v-64c0-2.6 2-4.6 4.6-4.6h27.4c2.6 0 4.6 2 4.6 4.6v64z" class=""></path></svg> </div> <div class="gate_title_wrapper"> بوابه الباحثين </div> </div> <div class="gate_wrapper"> <div class="gate_icon_wrapper researcher_gate"> <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="microscope" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-microscope fa-w-16 fa-3x"><path fill="currentColor" d="M160 320h12v16c0 8.84 7.16 16 16 16h40c8.84 0 16-7.16 16-16v-16h12c17.67 0 32-14.33 32-32V64c0-17.67-14.33-32-32-32V16c0-8.84-7.16-16-16-16h-64c-8.84 0-16 7.16-16 16v16c-17.67 0-32 14.33-32 32v224c0 17.67 14.33 32 32 32zm304 128h-1.29C493.24 413.99 512 369.2 512 320c0-105.88-86.12-192-192-192v64c70.58 0 128 57.42 128 128s-57.42 128-128 128H48c-26.51 0-48 21.49-48 48 0 8.84 7.16 16 16 16h480c8.84 0 16-7.16 16-16 0-26.51-21.49-48-48-48zm-360-32h208c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8H104c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8z" class=""></path></svg> </div> <div class="gate_title_wrapper"> بوابه الطلاب والمعلمين </div> </div> <div class="gate_wrapper"> <div class="gate_icon_wrapper readers_gate"> <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="books" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="svg-inline--fa fa-books fa-w-18 fa-3x"><path fill="currentColor" d="M575.11 443.25L461.51 19.06C458.2 6.7 445.61-3.18 430.15.96L414.7 5.1c-6.18 1.66-11.53 6.4-16.06 14.24-14.03 6.94-52.3 17.21-68 18.22-7.84-4.53-14.85-5.96-21.03-4.3l-15.46 4.14c-2.42.65-4.2 1.95-6.15 3.08V32c0-17.67-14.33-32-32-32h-64c-17.67 0-32 14.33-32 32v64h128l101.66 396.94c3.31 12.36 15.9 22.24 31.36 18.1l15.45-4.14c6.18-1.66 11.53-6.4 16.06-14.24 13.91-6.88 52.18-17.2 68-18.22 7.84 4.53 14.85 5.96 21.03 4.3l15.46-4.14c15.45-4.14 21.41-18.99 18.09-31.35zm-134.4-7.06L348.64 92.37l61.82-16.56 92.07 343.82-61.82 16.56zM0 384h128V128H0v256zM96 0H32C14.33 0 0 14.33 0 32v64h128V32c0-17.67-14.33-32-32-32zM0 480c0 17.67 14.33 32 32 32h64c17.67 0 32-14.33 32-32v-64H0v64zm160-96h128V128H160v256zm0 96c0 17.67 14.33 32 32 32h64c17.67 0 32-14.33 32-32v-64H160v64z" class=""></path></svg> </div> <div class="gate_title_wrapper"> بوابه الآطفال </div> </div> </div> <style> .gates_wrapper { display: flex; height: 100px; justify-content: center; align-items: center; width: 100%; background: white; border-radius:10px; margin-bottom:39px; margin-top:40px; } .gate_wrapper { width: 25%; display: flex; justify-content: space-between; align-items: center; flex-direction: column; height: 80%; } .gate_icon_wrapper { height: 50px; width: 50px; display: flex; border-radius: 50%; color: white; justify-content: center; align-items: center; } .gate_icon_wrapper.readers_gate { background: #ffc107; } .gate_icon_wrapper.researcher_gate { background: #e91e63; } .gate_icon_wrapper.children_gate { background: #2196f3; } .gate_icon_wrapper.education_gate { background: #4caf50; } .gate_icon_wrapper svg { max-width: 50%; } .gate_title_wrapper { text-align: center; } </style><p dir="rtl"><span style="font-size:20px"><em><strong></strong></em></span></p> <ol dir="rtl"> <li><span style="font-size:18px">اختر بوابة من البوابات الأربع التى تريدها كمستخدم للبنك (قارئ عام - معلم أو طالب مدرسى أو طالب جامعى - باحث أكاديمي جامعى - طفل )</span></li> <li><span style="font-size:18px">قم بكتابه بياناتك المطلوبه (بريدك الألكترونى - رقمك الثومى - أدراتك التعليميه فى حال المعلم - النطقه أى المديريه التعليميه فى حال المعلم - المدرسة)</span></li> <li><span style="font-size:18px">الباحثين الاكاديمين (أى العاملين بالجامعات والكليات من الأساتذه أو أعضاء هيئه التدريس ، لا يسمح لهم بالتسجيل الا من داخل الجامعه ذاتها وخط الانترنت بها . ثم بعد ذلك يمكنهم الدخول من أى مكان بالجمهورية).</span></li> </ol>',
+                    }
+                ],
                 featured:true,
 
             },
             {
                 id:3,
                 title:'تسجيل الدخول الى بنك المعرفه',
-                content:'<img class="content_image" src="'+ app.images[0].img[1] +'"><h1 dir="rtl"><span style="font-size:16px">عند الضغط علي تسجيل الدخول في اعلي النافذه يتم كتابة عنوان البريد الالكتروني وكلمة المرور التي تم ارسالها علي بريدك&nbsp;الالكتروني من خلال بنك المعرفه</span></h1><h1 dir="rtl"><span style="font-size:16px">في حالة الدخول علي البنك بعد ذلك يطلب منك عنوان البريد الالكتروني وكلمة المرور الجديدة بعد تغيرها&nbsp;كما في النافذة التاليه</span></h1><img class="content_image" src="'+ app.images[0].img[2] +'">',
+                pages:[
+                    {
+                        id:1,
+                        content:'<img class="content_image" src="'+ app.images[0].img[1] +'"><h1 dir="rtl"><span style="font-size:16px">عند الضغط علي تسجيل الدخول في اعلي النافذه يتم كتابة عنوان البريد الالكتروني وكلمة المرور التي تم ارسالها علي بريدك&nbsp;الالكتروني من خلال بنك المعرفه</span></h1><h1 dir="rtl"><span style="font-size:16px">في حالة الدخول علي البنك بعد ذلك يطلب منك عنوان البريد الالكتروني وكلمة المرور الجديدة بعد تغيرها&nbsp;كما في النافذة التاليه</span></h1><img class="content_image" src="'+ app.images[0].img[2] +'">',
+                    }
+                ],
                 featured:false,
                 icons:"" 
             }
@@ -387,7 +504,16 @@ app.content = [
             {
                 id:4,
                 title:'كيفيه استخدام محرك البحث',
-                content:'<h1 style="text-align:right"><span style="font-size:16px">يوجد هناك نوعان من البحث&nbsp;</span></h1> <h1 style="text-align:right"><span style="font-size:14px"><strong>اولا البحث البسيط</strong></span></h1><p> نكتب فى شريط البحث <strong>ancient Egypt</strong></p> <img class="content_image" src="'+ app.images[1].img[0] +'"><p dir="rtl"><span style="font-size:16px">بالضغط على <em><strong>Enter</strong></em>&nbsp;تظهر النتيجه كما فى النافذه التاليه</span></p><img class="content_image" src="'+ app.images[1].img[1] +'"><p dir="rtl"><span style="font-size:16px">نكتب في شريط البحث عنوان الطاقه ثم نظغط علي بحث متقدم</span></p><img class="content_image" src="'+ app.images[1].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وهى تحتوى على جميع المصادر التي بها عنوان البحث يمكن التحكم في نتائج البحث &nbsp;من حيث اختيار مصادر معينة&nbsp;</span></span><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">يمكن تحديد نطاق البحث في مجلات &nbsp;معينة يحددها الباحث كما في <strong>النافذة التالية</strong> </span></span></span></p><img class="content_image" src="'+ app.images[1].img[3] +'"><p dir="RTL" style="text-align:right"><span style="font-family:Arial,sans-serif"><span style="font-size:16px">تستطيع من خلال البحث المتقدم البحث عن الكلمه المفتاحيه أو المؤلف أو العنوان أو الموضوع أو الوصف كما فى<strong> النافذة التالية</strong></span></span></p><img class="content_image" src="'+ app.images[1].img[4] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">أما عند اختيارالمقال الأول لنتيجة البحث عن الطاقة تظهر النافذة التالية&nbsp; التى&nbsp;يتاح من خلالها أمكانية ارسال المقال بأكثر من طريقة لصديق مثل&nbsp; الفيس او البريد الالكتروني أو تويتر ..... وكذلك امكانية عرض المقال باللغة الانجليزية و امكانية&nbsp; طباعة المقال</span></span></span></p><img class="content_image" src="'+ app.images[1].img[5] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح&nbsp; كيفية ارسال المقال لصديق عبر البريد الالكتروني</span></span></span></p>',
+                pages:[
+                    {
+                        id:1,
+                        content:'<h1 style="text-align:right"><span style="font-size:16px">يوجد هناك نوعان من البحث&nbsp;</span></h1> <h1 style="text-align:right"><span style="font-size:14px"><strong>اولا البحث البسيط</strong></span></h1><p> نكتب فى شريط البحث <strong>ancient Egypt</strong></p> <img class="content_image" src="'+ app.images[1].img[0] +'"><p dir="rtl"><span style="font-size:16px">بالضغط على <em><strong>Enter</strong></em>&nbsp;تظهر النتيجه كما فى النافذه التاليه</span></p><img class="content_image" src="'+ app.images[1].img[1] +'"><p dir="rtl"><span style="font-size:16px">نكتب في شريط البحث عنوان الطاقه ثم نظغط علي بحث متقدم</span></p><img class="content_image" src="'+ app.images[1].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وهى تحتوى على جميع المصادر التي بها عنوان البحث يمكن التحكم في نتائج البحث &nbsp;من حيث اختيار مصادر معينة&nbsp;</span></span><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">يمكن تحديد نطاق البحث في مجلات &nbsp;معينة يحددها الباحث كما في <strong>النافذة التالية</strong> </span></span></span></p><img class="content_image" src="'+ app.images[1].img[3] +'"><p dir="RTL" style="text-align:right"><span style="font-family:Arial,sans-serif"><span style="font-size:16px">تستطيع من خلال البحث المتقدم البحث عن الكلمه المفتاحيه أو المؤلف أو العنوان أو الموضوع أو الوصف كما فى<strong> النافذة التالية</strong></span></span></p><img class="content_image" src="'+ app.images[1].img[4] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">أما عند اختيارالمقال الأول لنتيجة البحث عن الطاقة تظهر النافذة التالية&nbsp; التى&nbsp;يتاح من خلالها أمكانية ارسال المقال بأكثر من طريقة لصديق مثل&nbsp; الفيس او البريد الالكتروني أو تويتر ..... وكذلك امكانية عرض المقال باللغة الانجليزية و امكانية&nbsp; طباعة المقال</span></span></span></p><img class="content_image" src="'+ app.images[1].img[5] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح&nbsp; كيفية ارسال المقال لصديق عبر البريد الالكتروني</span></span></span></p>',
+                    },
+                    {
+                        id:2,
+                        content:'<h1 style="text-align:right"><span style="font-size:16px">يوجد هناك نوعان من البحث&nbsp;</span></h1> <h1 style="text-align:right"><span style="font-size:14px"><strong>اولا البحث البسيط</strong></span></h1><p> نكتب فى شريط البحث <strong>ancient Egypt</strong></p> <img class="content_image" src="'+ app.images[1].img[0] +'"><p dir="rtl"><span style="font-size:16px">بالضغط على <em><strong>Enter</strong></em>&nbsp;تظهر النتيجه كما فى النافذه التاليه</span></p><img class="content_image" src="'+ app.images[1].img[1] +'"><p dir="rtl"><span style="font-size:16px">نكتب في شريط البحث عنوان الطاقه ثم نظغط علي بحث متقدم</span></p><img class="content_image" src="'+ app.images[1].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وهى تحتوى على جميع المصادر التي بها عنوان البحث يمكن التحكم في نتائج البحث &nbsp;من حيث اختيار مصادر معينة&nbsp;</span></span><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">يمكن تحديد نطاق البحث في مجلات &nbsp;معينة يحددها الباحث كما في <strong>النافذة التالية</strong> </span></span></span></p><img class="content_image" src="'+ app.images[1].img[3] +'"><p dir="RTL" style="text-align:right"><span style="font-family:Arial,sans-serif"><span style="font-size:16px">تستطيع من خلال البحث المتقدم البحث عن الكلمه المفتاحيه أو المؤلف أو العنوان أو الموضوع أو الوصف كما فى<strong> النافذة التالية</strong></span></span></p><img class="content_image" src="'+ app.images[1].img[4] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">أما عند اختيارالمقال الأول لنتيجة البحث عن الطاقة تظهر النافذة التالية&nbsp; التى&nbsp;يتاح من خلالها أمكانية ارسال المقال بأكثر من طريقة لصديق مثل&nbsp; الفيس او البريد الالكتروني أو تويتر ..... وكذلك امكانية عرض المقال باللغة الانجليزية و امكانية&nbsp; طباعة المقال</span></span></span></p><img class="content_image" src="'+ app.images[1].img[5] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح&nbsp; كيفية ارسال المقال لصديق عبر البريد الالكتروني</span></span></span></p>',
+                    }
+                ],
                 featured:false,
                 icons:""
             }
@@ -397,7 +523,6 @@ app.content = [
         id:3,
         name:'المصادر',
         icon:"img/undraw_online_articles_79ff.svg",
-
         topics:[
             {
                 id:5,
@@ -405,7 +530,42 @@ app.content = [
                 title:' Discovery Education',
                 content:'<p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">المصدر<em><strong> </strong></em></span><em><strong>Discovery education </strong></em><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;يوفر محتوى&nbsp; تعليمي مناسب للمناهج الدراسية للمراحل التعليمية المختلفة ( ابتدائي - اعدادي - ثانوی )</span></span></span></p><img class="content_image" src="'+ app.images[2].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">للبحث نذهب الى مربع النص أعلى النافذة ثم نقوم بكتابة اي عنوان &nbsp;تريد البحث &nbsp;عنه مثلا </span>&nbsp;&nbsp;&nbsp;scarecrow <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">ثم الضغط على بحث </span></span></span></p> <p dir="rtl"><span style="font-size:16px"><span dir="RTL" lang="AR-JO">وانظرماذا ترى سوف ترى الشاشةالتالية</span></span></p> <p dir="rtl">&nbsp;</p> <p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">ا</span></span></span></p><img class="content_image" src="'+ app.images[2].img[1] +'"><p style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; وعند الضغط على احدى &nbsp;نتائج البحث سوف يقوم بعرض الفيديو من نتيجة البحث المختار كما تظهر فى النافذه التاليه</span></span></span></p><img class="content_image" src="'+ app.images[2].img[2] +'"><p style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-JO"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">الشاشة التالية توضح انه يمكن مشاركة على &nbsp;مواقع التواصل الاجتماعى او ارساله عبر الميل</span></span></span></p><img class="content_image" src="'+ app.images[2].img[3] +'"><p style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-JO"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">مثال اخر يمكن البحث عن الجهاز الهضمى كما هو موضح في الشاشات التالية </span></span></span></p><img class="content_image" src="'+ app.images[2].img[4] +'"><img class="content_image" src="'+ app.images[2].img[5] +'">',
                 featured:false,
-
+                pages: false,
+                parent_topic: true,
+                child_topics: [
+                    {
+                        id:20,          
+                        color: 'linear-gradient(to top left, #3366cc 0%, #006699 100%)',
+                        title:' العبيكان',
+                        pages:[
+                            {
+                                id:1,
+                                content:'<ul dir="rtl"> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;أنشئت<strong> مكتبة العبيكان </strong>لكي تكون منارة للفكر والثقافة تضيء من المملكة العربية السعودية للعالم العربي كله ، وقد تبنت <strong>مكتبة العبيكان</strong> منذ إنشائها نهجا مبنية على تحمل مسؤوليتها الاجتماعية في نشر العلم والثقافة والمعرفة بين أبناء الوطن والمنطقة ، وهذا ما تجلى في إسهامها في عالم النشر والترجمة . إذ بلغت إصداراتها أكثر من ثلاث آلاف عنوان في كافة التخصصات وفروع العلم والمعرفة .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">تقوم بتوزيعها على مستوى العالم العربي عبر وكلائها ومكاتبها المنتشرة في العوالم العربية ، وعبر المشاركة في جميع المعارض الدولية على مستوى العالم . تعد مكتبة العبيكان أحد أكبر المكتبات في العالم العربي والشرق الأوسط ، فهي تمتد إلى </span><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">۲۰</span> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">فرعا في جميع أنحاء المملكة ، تضم أكثر من مئة ألف من العناوين العربية والأجنبية توفرها لكل قارئ أو باحث أو طالب علم ، كما تضم مكتبة متخصصة للطفل تلبي كافة احتياجاتة المعرفية والتربوية .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وقد قامت المكتبة بإتاحة محتوى رقمي يخدم الاحتياجات التعليمية والبحثية والمعرفية للدارسين والباحثين والمثقفين المهتمين بالمحتوى العربي من خلال التطوير المستمر لمكتبة العبيكان الرقمية وقاعدة بيانات إثراء المعارف الرقمية والتي يمكن استخدامها من خلال منصة بحث وواجهات تعامل معيارية ، وآليات الفهرسة والتكشيف وفقا للمعايير الدولية وبما يحقق التكامل المعرفى والتكنولوجي في الوقت نفسه .</span></span></span></h1> </li> </ul>',
+                            },
+                            {
+                                id:2,
+                                content:'<h1 dir="rtl"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وعند اختيار اثراء المعارف الرقمية كما في النافذة التالية</span></span></span></h1> <img class="content_image" src="'+ app.images[7].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">نقوم بكتابة ما نريد البحث عنه&nbsp; في خانة البحث ونختار ما نريد البحث فيه من العلوم الاجتماعية , العلوم الباحتة , الادب والفنون &nbsp;......الخ.</span></span></span></p><img class="content_image" src="'+ app.images[7].img[1] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح النافذة التالية عند اختيار&nbsp; المكتبة المدرسية من قائمة البحث </span></span></span></p><img class="content_image" src="'+ app.images[7].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على الرابط للبحث داخل المكتبة المدرسية&nbsp; حتي الشريحة &nbsp;106 يتم عرض مثال لعرض قصة يوسف وشجرة المانجو وكذلك&nbsp; البحث عن أعمال المؤلف عمر الصاوي وتنزيل نتيجة البحث في صورة </span></span><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;">pdf</span><span dir="RTL" lang="AR-EG"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; للاحتفاظ به على الكمبيوتر الخاص بك</span></span></span></p><img class="content_image" src="'+ app.images[7].img[3] +'">',
+                            },
+                            {
+                                id:3,
+                                content:'<ul dir="rtl"> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;أنشئت<strong> مكتبة العبيكان </strong>لكي تكون منارة للفكر والثقافة تضيء من المملكة العربية السعودية للعالم العربي كله ، وقد تبنت <strong>مكتبة العبيكان</strong> منذ إنشائها نهجا مبنية على تحمل مسؤوليتها الاجتماعية في نشر العلم والثقافة والمعرفة بين أبناء الوطن والمنطقة ، وهذا ما تجلى في إسهامها في عالم النشر والترجمة . إذ بلغت إصداراتها أكثر من ثلاث آلاف عنوان في كافة التخصصات وفروع العلم والمعرفة .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">تقوم بتوزيعها على مستوى العالم العربي عبر وكلائها ومكاتبها المنتشرة في العوالم العربية ، وعبر المشاركة في جميع المعارض الدولية على مستوى العالم . تعد مكتبة العبيكان أحد أكبر المكتبات في العالم العربي والشرق الأوسط ، فهي تمتد إلى </span><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">۲۰</span> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">فرعا في جميع أنحاء المملكة ، تضم أكثر من مئة ألف من العناوين العربية والأجنبية توفرها لكل قارئ أو باحث أو طالب علم ، كما تضم مكتبة متخصصة للطفل تلبي كافة احتياجاتة المعرفية والتربوية .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وقد قامت المكتبة بإتاحة محتوى رقمي يخدم الاحتياجات التعليمية والبحثية والمعرفية للدارسين والباحثين والمثقفين المهتمين بالمحتوى العربي من خلال التطوير المستمر لمكتبة العبيكان الرقمية وقاعدة بيانات إثراء المعارف الرقمية والتي يمكن استخدامها من خلال منصة بحث وواجهات تعامل معيارية ، وآليات الفهرسة والتكشيف وفقا للمعايير الدولية وبما يحقق التكامل المعرفى والتكنولوجي في الوقت نفسه .</span></span></span></h1> </li> </ul>',
+                            },
+                            {
+                                id:4,
+                                content:'<h1 dir="rtl"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وعند اختيار اثراء المعارف الرقمية كما في النافذة التالية</span></span></span></h1> <img class="content_image" src="'+ app.images[7].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">نقوم بكتابة ما نريد البحث عنه&nbsp; في خانة البحث ونختار ما نريد البحث فيه من العلوم الاجتماعية , العلوم الباحتة , الادب والفنون &nbsp;......الخ.</span></span></span></p><img class="content_image" src="'+ app.images[7].img[1] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح النافذة التالية عند اختيار&nbsp; المكتبة المدرسية من قائمة البحث </span></span></span></p><img class="content_image" src="'+ app.images[7].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على الرابط للبحث داخل المكتبة المدرسية&nbsp; حتي الشريحة &nbsp;106 يتم عرض مثال لعرض قصة يوسف وشجرة المانجو وكذلك&nbsp; البحث عن أعمال المؤلف عمر الصاوي وتنزيل نتيجة البحث في صورة </span></span><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;">pdf</span><span dir="RTL" lang="AR-EG"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; للاحتفاظ به على الكمبيوتر الخاص بك</span></span></span></p><img class="content_image" src="'+ app.images[7].img[3] +'">',
+                            },
+                            {
+                                id:5,
+                                content:'<ul dir="rtl"> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;أنشئت<strong> مكتبة العبيكان </strong>لكي تكون منارة للفكر والثقافة تضيء من المملكة العربية السعودية للعالم العربي كله ، وقد تبنت <strong>مكتبة العبيكان</strong> منذ إنشائها نهجا مبنية على تحمل مسؤوليتها الاجتماعية في نشر العلم والثقافة والمعرفة بين أبناء الوطن والمنطقة ، وهذا ما تجلى في إسهامها في عالم النشر والترجمة . إذ بلغت إصداراتها أكثر من ثلاث آلاف عنوان في كافة التخصصات وفروع العلم والمعرفة .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">تقوم بتوزيعها على مستوى العالم العربي عبر وكلائها ومكاتبها المنتشرة في العوالم العربية ، وعبر المشاركة في جميع المعارض الدولية على مستوى العالم . تعد مكتبة العبيكان أحد أكبر المكتبات في العالم العربي والشرق الأوسط ، فهي تمتد إلى </span><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">۲۰</span> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">فرعا في جميع أنحاء المملكة ، تضم أكثر من مئة ألف من العناوين العربية والأجنبية توفرها لكل قارئ أو باحث أو طالب علم ، كما تضم مكتبة متخصصة للطفل تلبي كافة احتياجاتة المعرفية والتربوية .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وقد قامت المكتبة بإتاحة محتوى رقمي يخدم الاحتياجات التعليمية والبحثية والمعرفية للدارسين والباحثين والمثقفين المهتمين بالمحتوى العربي من خلال التطوير المستمر لمكتبة العبيكان الرقمية وقاعدة بيانات إثراء المعارف الرقمية والتي يمكن استخدامها من خلال منصة بحث وواجهات تعامل معيارية ، وآليات الفهرسة والتكشيف وفقا للمعايير الدولية وبما يحقق التكامل المعرفى والتكنولوجي في الوقت نفسه .</span></span></span></h1> </li> </ul>',
+                            },
+                            {
+                                id:6,
+                                content:'<h1 dir="rtl"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وعند اختيار اثراء المعارف الرقمية كما في النافذة التالية</span></span></span></h1> <img class="content_image" src="'+ app.images[7].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">نقوم بكتابة ما نريد البحث عنه&nbsp; في خانة البحث ونختار ما نريد البحث فيه من العلوم الاجتماعية , العلوم الباحتة , الادب والفنون &nbsp;......الخ.</span></span></span></p><img class="content_image" src="'+ app.images[7].img[1] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح النافذة التالية عند اختيار&nbsp; المكتبة المدرسية من قائمة البحث </span></span></span></p><img class="content_image" src="'+ app.images[7].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على الرابط للبحث داخل المكتبة المدرسية&nbsp; حتي الشريحة &nbsp;106 يتم عرض مثال لعرض قصة يوسف وشجرة المانجو وكذلك&nbsp; البحث عن أعمال المؤلف عمر الصاوي وتنزيل نتيجة البحث في صورة </span></span><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;">pdf</span><span dir="RTL" lang="AR-EG"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; للاحتفاظ به على الكمبيوتر الخاص بك</span></span></span></p><img class="content_image" src="'+ app.images[7].img[3] +'">',
+                            }
+                        ],
+                        featured:false,
+                    }
+                ]
             },
             {
                 
@@ -427,6 +587,22 @@ app.content = [
                     },
                     {
                         id:2,
+                        content:'<h1 dir="rtl"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وعند اختيار اثراء المعارف الرقمية كما في النافذة التالية</span></span></span></h1> <img class="content_image" src="'+ app.images[7].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">نقوم بكتابة ما نريد البحث عنه&nbsp; في خانة البحث ونختار ما نريد البحث فيه من العلوم الاجتماعية , العلوم الباحتة , الادب والفنون &nbsp;......الخ.</span></span></span></p><img class="content_image" src="'+ app.images[7].img[1] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح النافذة التالية عند اختيار&nbsp; المكتبة المدرسية من قائمة البحث </span></span></span></p><img class="content_image" src="'+ app.images[7].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على الرابط للبحث داخل المكتبة المدرسية&nbsp; حتي الشريحة &nbsp;106 يتم عرض مثال لعرض قصة يوسف وشجرة المانجو وكذلك&nbsp; البحث عن أعمال المؤلف عمر الصاوي وتنزيل نتيجة البحث في صورة </span></span><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;">pdf</span><span dir="RTL" lang="AR-EG"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; للاحتفاظ به على الكمبيوتر الخاص بك</span></span></span></p><img class="content_image" src="'+ app.images[7].img[3] +'">',
+                    },
+                    {
+                        id:3,
+                        content:'<ul dir="rtl"> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;أنشئت<strong> مكتبة العبيكان </strong>لكي تكون منارة للفكر والثقافة تضيء من المملكة العربية السعودية للعالم العربي كله ، وقد تبنت <strong>مكتبة العبيكان</strong> منذ إنشائها نهجا مبنية على تحمل مسؤوليتها الاجتماعية في نشر العلم والثقافة والمعرفة بين أبناء الوطن والمنطقة ، وهذا ما تجلى في إسهامها في عالم النشر والترجمة . إذ بلغت إصداراتها أكثر من ثلاث آلاف عنوان في كافة التخصصات وفروع العلم والمعرفة .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">تقوم بتوزيعها على مستوى العالم العربي عبر وكلائها ومكاتبها المنتشرة في العوالم العربية ، وعبر المشاركة في جميع المعارض الدولية على مستوى العالم . تعد مكتبة العبيكان أحد أكبر المكتبات في العالم العربي والشرق الأوسط ، فهي تمتد إلى </span><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">۲۰</span> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">فرعا في جميع أنحاء المملكة ، تضم أكثر من مئة ألف من العناوين العربية والأجنبية توفرها لكل قارئ أو باحث أو طالب علم ، كما تضم مكتبة متخصصة للطفل تلبي كافة احتياجاتة المعرفية والتربوية .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وقد قامت المكتبة بإتاحة محتوى رقمي يخدم الاحتياجات التعليمية والبحثية والمعرفية للدارسين والباحثين والمثقفين المهتمين بالمحتوى العربي من خلال التطوير المستمر لمكتبة العبيكان الرقمية وقاعدة بيانات إثراء المعارف الرقمية والتي يمكن استخدامها من خلال منصة بحث وواجهات تعامل معيارية ، وآليات الفهرسة والتكشيف وفقا للمعايير الدولية وبما يحقق التكامل المعرفى والتكنولوجي في الوقت نفسه .</span></span></span></h1> </li> </ul>',
+                    },
+                    {
+                        id:4,
+                        content:'<h1 dir="rtl"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وعند اختيار اثراء المعارف الرقمية كما في النافذة التالية</span></span></span></h1> <img class="content_image" src="'+ app.images[7].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">نقوم بكتابة ما نريد البحث عنه&nbsp; في خانة البحث ونختار ما نريد البحث فيه من العلوم الاجتماعية , العلوم الباحتة , الادب والفنون &nbsp;......الخ.</span></span></span></p><img class="content_image" src="'+ app.images[7].img[1] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح النافذة التالية عند اختيار&nbsp; المكتبة المدرسية من قائمة البحث </span></span></span></p><img class="content_image" src="'+ app.images[7].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على الرابط للبحث داخل المكتبة المدرسية&nbsp; حتي الشريحة &nbsp;106 يتم عرض مثال لعرض قصة يوسف وشجرة المانجو وكذلك&nbsp; البحث عن أعمال المؤلف عمر الصاوي وتنزيل نتيجة البحث في صورة </span></span><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;">pdf</span><span dir="RTL" lang="AR-EG"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; للاحتفاظ به على الكمبيوتر الخاص بك</span></span></span></p><img class="content_image" src="'+ app.images[7].img[3] +'">',
+                    },
+                    {
+                        id:5,
+                        content:'<ul dir="rtl"> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;أنشئت<strong> مكتبة العبيكان </strong>لكي تكون منارة للفكر والثقافة تضيء من المملكة العربية السعودية للعالم العربي كله ، وقد تبنت <strong>مكتبة العبيكان</strong> منذ إنشائها نهجا مبنية على تحمل مسؤوليتها الاجتماعية في نشر العلم والثقافة والمعرفة بين أبناء الوطن والمنطقة ، وهذا ما تجلى في إسهامها في عالم النشر والترجمة . إذ بلغت إصداراتها أكثر من ثلاث آلاف عنوان في كافة التخصصات وفروع العلم والمعرفة .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">تقوم بتوزيعها على مستوى العالم العربي عبر وكلائها ومكاتبها المنتشرة في العوالم العربية ، وعبر المشاركة في جميع المعارض الدولية على مستوى العالم . تعد مكتبة العبيكان أحد أكبر المكتبات في العالم العربي والشرق الأوسط ، فهي تمتد إلى </span><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">۲۰</span> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">فرعا في جميع أنحاء المملكة ، تضم أكثر من مئة ألف من العناوين العربية والأجنبية توفرها لكل قارئ أو باحث أو طالب علم ، كما تضم مكتبة متخصصة للطفل تلبي كافة احتياجاتة المعرفية والتربوية .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وقد قامت المكتبة بإتاحة محتوى رقمي يخدم الاحتياجات التعليمية والبحثية والمعرفية للدارسين والباحثين والمثقفين المهتمين بالمحتوى العربي من خلال التطوير المستمر لمكتبة العبيكان الرقمية وقاعدة بيانات إثراء المعارف الرقمية والتي يمكن استخدامها من خلال منصة بحث وواجهات تعامل معيارية ، وآليات الفهرسة والتكشيف وفقا للمعايير الدولية وبما يحقق التكامل المعرفى والتكنولوجي في الوقت نفسه .</span></span></span></h1> </li> </ul>',
+                    },
+                    {
+                        id:6,
                         content:'<h1 dir="rtl"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وعند اختيار اثراء المعارف الرقمية كما في النافذة التالية</span></span></span></h1> <img class="content_image" src="'+ app.images[7].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">نقوم بكتابة ما نريد البحث عنه&nbsp; في خانة البحث ونختار ما نريد البحث فيه من العلوم الاجتماعية , العلوم الباحتة , الادب والفنون &nbsp;......الخ.</span></span></span></p><img class="content_image" src="'+ app.images[7].img[1] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح النافذة التالية عند اختيار&nbsp; المكتبة المدرسية من قائمة البحث </span></span></span></p><img class="content_image" src="'+ app.images[7].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على الرابط للبحث داخل المكتبة المدرسية&nbsp; حتي الشريحة &nbsp;106 يتم عرض مثال لعرض قصة يوسف وشجرة المانجو وكذلك&nbsp; البحث عن أعمال المؤلف عمر الصاوي وتنزيل نتيجة البحث في صورة </span></span><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;">pdf</span><span dir="RTL" lang="AR-EG"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; للاحتفاظ به على الكمبيوتر الخاص بك</span></span></span></p><img class="content_image" src="'+ app.images[7].img[3] +'">',
                     }
                 ],
