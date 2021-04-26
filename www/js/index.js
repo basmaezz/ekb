@@ -94,8 +94,13 @@ app.get_topic_content = function(topic_id){
                 const topic = category.topics[x];
                 if(topic.id == topic_id){
                     if('pages' in topic){
-                        content_html += topic.pages[0].content
-                        $('.next_page_btn').show()
+                        console.log('has pages')
+                        if(topic.pages.length > 1){
+                            content_html += topic.pages[0].content
+                            $('.content_wrapper').append('<ons-row> <ons-col> <div class="topic_nav_wrapper"> <div class="topic_nav_btn prev" hidden></div> <div class="topic_nav_btn next" hidden></div> </div> </ons-col> </ons-row>')    
+                        } else{
+                            content_html += topic.pages[0].content     
+                        }
                     } else {
                         content_html += topic.content   
                     }
@@ -246,19 +251,26 @@ app.images = [
             // 'img/imgs/bank.png',
             'img/imgs/simplesearch.png',
             'img/imgs/searchresult.png',
+            'img/imgs/energy.png',
+            'img/imgs/resource.png',
+            'img/imgs/key.png',
+            'img/imgs/article.png'
 
               ]
     },{
         topic_id: 3,
         img: [
-            'img/imgs/teachergate.png',
-  
-
+            'img/imgs/discovery1.png',
+            'img/imgs/discovery2.png',
+            'img/imgs/video.png',
+            'img/imgs/share.png',
+            'img/imgs/discovery3.png',
+            'img/imgs/discovery4.png',
         ]
     },{
         topic_id: 4,
         img: [
-            // 'img/imgs/discovery1.png',
+            // 
             'img/imgs/teachergate.png',
 
          
@@ -289,9 +301,10 @@ app.images = [
     },{
         topic_id: 7,
         img: [
-            'img/atomic.png',
-            'img/atomic2.png',
-
+            'img/imgs/library.png',
+            'img/imgs/searchlibrabry.png',
+            'img/imgs/loginlib.png',
+            'img/imgs/library2.png'
         ]
     },{
         topic_id: 8,
@@ -374,7 +387,7 @@ app.content = [
             {
                 id:4,
                 title:'كيفيه استخدام محرك البحث',
-                content:'<p dir="rtl"><span style="font-size:16px"><strong>مثال&nbsp;  للبحث بشكل بسيط نكتب فى شريط البحث ancient Egypt</strong></span></p><img class="content_image" src="'+ app.images[1].img[0] +'"><h1 dir="rtl"><strong><span style="font-size:16px">بالضغط على Enter</span></h1><img class="content_image" src="'+ app.images[1].img[1] +'">',
+                content:'<h1 style="text-align:right"><span style="font-size:16px">يوجد هناك نوعان من البحث&nbsp;</span></h1> <h1 style="text-align:right"><span style="font-size:14px"><strong>اولا البحث البسيط</strong></span></h1><p> نكتب فى شريط البحث <strong>ancient Egypt</strong></p> <img class="content_image" src="'+ app.images[1].img[0] +'"><p dir="rtl"><span style="font-size:16px">بالضغط على <em><strong>Enter</strong></em>&nbsp;تظهر النتيجه كما فى النافذه التاليه</span></p><img class="content_image" src="'+ app.images[1].img[1] +'"><p dir="rtl"><span style="font-size:16px">نكتب في شريط البحث عنوان الطاقه ثم نظغط علي بحث متقدم</span></p><img class="content_image" src="'+ app.images[1].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وهى تحتوى على جميع المصادر التي بها عنوان البحث يمكن التحكم في نتائج البحث &nbsp;من حيث اختيار مصادر معينة&nbsp;</span></span><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">يمكن تحديد نطاق البحث في مجلات &nbsp;معينة يحددها الباحث كما في <strong>النافذة التالية</strong> </span></span></span></p><img class="content_image" src="'+ app.images[1].img[3] +'"><p dir="RTL" style="text-align:right"><span style="font-family:Arial,sans-serif"><span style="font-size:16px">تستطيع من خلال البحث المتقدم البحث عن الكلمه المفتاحيه أو المؤلف أو العنوان أو الموضوع أو الوصف كما فى<strong> النافذة التالية</strong></span></span></p><img class="content_image" src="'+ app.images[1].img[4] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">أما عند اختيارالمقال الأول لنتيجة البحث عن الطاقة تظهر النافذة التالية&nbsp; التى&nbsp;يتاح من خلالها أمكانية ارسال المقال بأكثر من طريقة لصديق مثل&nbsp; الفيس او البريد الالكتروني أو تويتر ..... وكذلك امكانية عرض المقال باللغة الانجليزية و امكانية&nbsp; طباعة المقال</span></span></span></p><img class="content_image" src="'+ app.images[1].img[5] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح&nbsp; كيفية ارسال المقال لصديق عبر البريد الالكتروني</span></span></span></p>',
                 featured:false,
                 icons:""
             }
@@ -390,7 +403,7 @@ app.content = [
                 id:5,
                 color: 'linear-gradient(to top left, #3366cc 0%, #ff99cc 100%)',
                 title:' Discovery Education',
-                content:'<p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">المصدر<em><strong> </strong></em></span><em><strong>Discovery education </strong></em><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;يوفر محتوى&nbsp; تعليمي مناسب للمناهج الدراسية للمراحل التعليمية المختلفة ( ابتدائي - اعدادي - ثانوی )</span></span></span></p><img class="content_image" src="'+ app.images[2].img[0] +'"> <p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">للبحث نذهب الى مربع النص أعلى النافذة ثم نقوم بكتابة اي عنوان &nbsp;تريد البحث &nbsp;عنه مثلا </span>&nbsp;&nbsp;&nbsp;scarecrow <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">ثم الضغط على بحث </span></span></span></p> <p dir="rtl"><span style="font-size:16px"><span dir="RTL" lang="AR-JO"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وانظر ماذا ترى سوف ترى الشاشة التالية</span></span></span></p> <p dir="rtl">&nbsp;</p> <p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">ا</span></span></span></p>',
+                content:'<p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">المصدر<em><strong> </strong></em></span><em><strong>Discovery education </strong></em><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;يوفر محتوى&nbsp; تعليمي مناسب للمناهج الدراسية للمراحل التعليمية المختلفة ( ابتدائي - اعدادي - ثانوی )</span></span></span></p><img class="content_image" src="'+ app.images[2].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">للبحث نذهب الى مربع النص أعلى النافذة ثم نقوم بكتابة اي عنوان &nbsp;تريد البحث &nbsp;عنه مثلا </span>&nbsp;&nbsp;&nbsp;scarecrow <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">ثم الضغط على بحث </span></span></span></p> <p dir="rtl"><span style="font-size:16px"><span dir="RTL" lang="AR-JO">وانظرماذا ترى سوف ترى الشاشةالتالية</span></span></p> <p dir="rtl">&nbsp;</p> <p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">ا</span></span></span></p><img class="content_image" src="'+ app.images[2].img[1] +'"><p style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; وعند الضغط على احدى &nbsp;نتائج البحث سوف يقوم بعرض الفيديو من نتيجة البحث المختار كما تظهر فى النافذه التاليه</span></span></span></p><img class="content_image" src="'+ app.images[2].img[2] +'"><p style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-JO"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">الشاشة التالية توضح انه يمكن مشاركة على &nbsp;مواقع التواصل الاجتماعى او ارساله عبر الميل</span></span></span></p><img class="content_image" src="'+ app.images[2].img[3] +'"><p style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-JO"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">مثال اخر يمكن البحث عن الجهاز الهضمى كما هو موضح في الشاشات التالية </span></span></span></p><img class="content_image" src="'+ app.images[2].img[4] +'"><img class="content_image" src="'+ app.images[2].img[5] +'">',
                 featured:false,
 
             },
@@ -407,10 +420,17 @@ app.content = [
                 id:7,          
                 color: 'linear-gradient(to top left, #3366cc 0%, #006699 100%)',
                 title:' العبيكان',
-                content:'<p>1. مكتبة العبيكان تعتبر مكتبة العبيكان | هي مكتية للكتب باللغة العربية والتي تحتوي على ما يقرب من ۲۹۰۰۰ كتاب تناسب جميع التخصسسات والاهتمامات بالإضافة إلى بعض المصادر البحثية المختلفة</p><img class="content_image" src="'+ app.images[6].img[0] +'"><li>2.أنشئت مكتبة العبيكان لكي تكون منارة للفكر والثقافة تضيء من المملكة العربية السعودية للعالم العربي كله ، وقد تبنت مكتبة العبيكان منذ إنشائها نهجا مبنية على تحمل مسؤوليتها الاجتماعية في نشر العلم والثقافة والمعرفة بين أبناء الوطن والمنطقة ، وهذا ماتجلى في إسهامها في عالم النشر والترجمة . إذ بلغت إصداراتها أكثر من ثلاث آلاف عنوان في كافة التخصصات وفروع العلم والمعرفة . تقوم بتوزيعها على مستوى العالم العربي عبر وكلائها ومكاتبها المنتشرة في العوا العربية ، وعبر المشاركة في جميع المعارض الدولية على مستوى العالم . تعد مكتبة العبيكان أحد أكبر المكتبات في العالم العربي والشرق الأوسط ، فهي تمتد إلى ۲۰ فرعا في جميع أنحاء المملكة ، تضم أكثر من مئة ألف من العناوين العربية والأجنبية توفرها لكل قارئ أو باحث أو طالب علم ،<img class="content_image" src="'+ app.images[6].img[1] +'"></br> 3.كما تضم مكتبة متخصصة للطفل تلبي كافة احتياجاتة المعرفية والتربوية . وقد قامت المكتبة بإتاحة محتوى رقمي يخدم الاحتياجات التعليمية والبحثية والمعرفية للدارسين والباحثين والمثقفين المهتمين بالمحتوى العربي من خلال التطوير المستمر لمكتبة العبيكان الرقمية وقاعدة بيانات إثراء المعارف الرقمية والتي يمكن استخدامها من خلال منصة بحث وواجهات تعامل معيارية ، وآليات الفهرسة والتكشيف وفقا للمعايير الدولية وبما يحقق التكامل المعر والتكنولوجي في الوقت نفسه</li><img class="content_image" src="'+ app.images[6].img[2] +'">',
+                pages:[
+                    {
+                        id:1,
+                        content:'<ul dir="rtl"> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;أنشئت<strong> مكتبة العبيكان </strong>لكي تكون منارة للفكر والثقافة تضيء من المملكة العربية السعودية للعالم العربي كله ، وقد تبنت <strong>مكتبة العبيكان</strong> منذ إنشائها نهجا مبنية على تحمل مسؤوليتها الاجتماعية في نشر العلم والثقافة والمعرفة بين أبناء الوطن والمنطقة ، وهذا ما تجلى في إسهامها في عالم النشر والترجمة . إذ بلغت إصداراتها أكثر من ثلاث آلاف عنوان في كافة التخصصات وفروع العلم والمعرفة .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">تقوم بتوزيعها على مستوى العالم العربي عبر وكلائها ومكاتبها المنتشرة في العوالم العربية ، وعبر المشاركة في جميع المعارض الدولية على مستوى العالم . تعد مكتبة العبيكان أحد أكبر المكتبات في العالم العربي والشرق الأوسط ، فهي تمتد إلى </span><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">۲۰</span> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">فرعا في جميع أنحاء المملكة ، تضم أكثر من مئة ألف من العناوين العربية والأجنبية توفرها لكل قارئ أو باحث أو طالب علم ، كما تضم مكتبة متخصصة للطفل تلبي كافة احتياجاتة المعرفية والتربوية .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وقد قامت المكتبة بإتاحة محتوى رقمي يخدم الاحتياجات التعليمية والبحثية والمعرفية للدارسين والباحثين والمثقفين المهتمين بالمحتوى العربي من خلال التطوير المستمر لمكتبة العبيكان الرقمية وقاعدة بيانات إثراء المعارف الرقمية والتي يمكن استخدامها من خلال منصة بحث وواجهات تعامل معيارية ، وآليات الفهرسة والتكشيف وفقا للمعايير الدولية وبما يحقق التكامل المعرفى والتكنولوجي في الوقت نفسه .</span></span></span></h1> </li> </ul>',
+                    },
+                    {
+                        id:2,
+                        content:'<h1 dir="rtl"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وعند اختيار اثراء المعارف الرقمية كما في النافذة التالية</span></span></span></h1> <img class="content_image" src="'+ app.images[7].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">نقوم بكتابة ما نريد البحث عنه&nbsp; في خانة البحث ونختار ما نريد البحث فيه من العلوم الاجتماعية , العلوم الباحتة , الادب والفنون &nbsp;......الخ.</span></span></span></p><img class="content_image" src="'+ app.images[7].img[1] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح النافذة التالية عند اختيار&nbsp; المكتبة المدرسية من قائمة البحث </span></span></span></p><img class="content_image" src="'+ app.images[7].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على الرابط للبحث داخل المكتبة المدرسية&nbsp; حتي الشريحة &nbsp;106 يتم عرض مثال لعرض قصة يوسف وشجرة المانجو وكذلك&nbsp; البحث عن أعمال المؤلف عمر الصاوي وتنزيل نتيجة البحث في صورة </span></span><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;">pdf</span><span dir="RTL" lang="AR-EG"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; للاحتفاظ به على الكمبيوتر الخاص بك</span></span></span></p><img class="content_image" src="'+ app.images[7].img[3] +'">',
+                    }
+                ],
                 featured:false,
-
-
             },
             {
                 id:8,
@@ -511,7 +531,7 @@ app.content = [
                 pages:[
                     {
                         id:1,
-                        content:'<h3 style="text-align:right"><em><strong>&nbsp; &nbsp;بوابه القراء</strong></em></h3> <p style="text-align:right">تحتوى البوابه الخاصه بعموم القراء على المصادر المعرفيه المحليه والاقلميه والعالميه باللغه الانجليزيه مدعمه بواجهه تشغيل وبحث سهله الاستخدام ومن أبرز<strong> المصادر</strong></p> <ul dir="rtl"> <li><strong>قناه ديسكفرى العالميه</strong></li> <li><strong>قناه ناشيونال جيوجرفيك التعليميه</strong> والتى توفر العديد من وسائل شرح وتبسيط العلوم المختلفه فى صورها المقروء والمسوعه والمرئيه</li> <li><strong>موسوعه بريتانيكا</strong> العامه الشهيره والتى توفر ملايين المقالات والفيديوهات والصور فى كل اتجاهات المعرفه بالاضافه الى أمهات الكتب التراثيه والادبيه من المكتبه البريطانيه باللغه العربيه والعديد من المصادر الاخرى كما تسعى البوابه الى تكامل المشروعات الوثائقيه والمعرفه الموجوده فى الجهات والهيئات المحليه كمكتبه والازهر الشريف وغيرها</li> </ul><img class="content_image" src="'+ app.images[6].img[0] +'">',
+                        content:'<img class="content_image" src="'+ app.images[6].img[0] +'"><p style="text-align:right">تحتوى البوابه الخاصه بعموم القراء على المصادر المعرفيه المحليه والاقلميه والعالميه باللغه الانجليزيه مدعمه بواجهه تشغيل وبحث سهله الاستخدام ومن أبرز<strong> المصادر</strong></p> <ul dir="rtl"> <li><strong>قناه ديسكفرى العالميه</strong></li> <li><strong>قناه ناشيونال جيوجرفيك التعليميه</strong> والتى توفر العديد من وسائل شرح وتبسيط العلوم المختلفه فى صورها المقروء والمسوعه والمرئيه</li> <li><strong>موسوعه بريتانيكا</strong> العامه الشهيره والتى توفر ملايين المقالات والفيديوهات والصور فى كل اتجاهات المعرفه بالاضافه الى أمهات الكتب التراثيه والادبيه من المكتبه البريطانيه باللغه العربيه والعديد من المصادر الاخرى كما تسعى البوابه الى تكامل المشروعات الوثائقيه والمعرفه الموجوده فى الجهات والهيئات المحليه كمكتبه والازهر الشريف وغيرها</li> </ul>',
                     },
                     {
                         id:2,
