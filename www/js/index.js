@@ -96,12 +96,14 @@ app.get_topic_content = function(topic_id){
     var data = app.content
     if (data){
         // var categordata[0]
-        var content_html = ''
         for (var i = 0; i < data.length; i++) {
             var category = data[i];
             for (let x = 0; x < category.topics.length; x++) {
                 const topic = category.topics[x];
                 if(topic.id == topic_id){
+                        console.log(topic)
+                        var content_html = ''
+
                     app.active_topic = {'id':topic.id,'title':topic.title,'parent_topic':topic.parent_topic,'child_topics':topic.child_topics}
                     if (!app.active_topic.parent_topic){
                         if(topic.pages.length >= 1){
@@ -111,6 +113,7 @@ app.get_topic_content = function(topic_id){
                                 app.active_topic.pages.push({'page_id': page.id, 'page_content': page.content})
                             }
                             content_html += topic.pages[0].content
+                            console.log(content_html)
                             $('#topic .content_wrapper').html(content_html)
                             app.active_page_number = 0
                             $('#topic .page__content').append('<div class="topic_nav_wrapper"><div class="nav_btn_wrapper"><div class="topic_nav_btn prev hidden">السابق</div></div><div class="nav_btn_wrapper"><div class="topic_nav_btn next">التالي</div></div> </div>')    
@@ -303,7 +306,16 @@ app.onDeviceReady = (function(_super) {
                 app.get_child_topics(category_id, topic_id)
             }
         }, false);
-        $(document).on('click','.topic_wrapper', function(){
+        document.addEventListener('init', function(event) {
+            if (event.target.matches('#topic')) {
+                // console.log(ekbNav.topPage.data.category_name)
+                var category_id = ekbNav.topPage.data.category_id
+                var topic_id = ekbNav.topPage.data.id
+                var title = ekbNav.topPage.data.title
+                $('#topic .toolbar__title').html(ekbNav.topPage.data.title)
+                app.get_topic_content(topic_id)
+            }
+        }, false);        $(document).on('click','.topic_wrapper', function(){
             if($(this).hasClass('parent_topic')){
                 ekbNav.pushPage('parent_topic.html',
                 {
@@ -536,28 +548,61 @@ app.content = [
                     {
                         id:20,          
                         color: 'linear-gradient(to top left, #3366cc 0%, #006699 100%)',
-                        title:' العبيكان',
+                        title:' الرئيسيه',
                         pages:[
                             {
                                 id:1,
                                 content:'<ul dir="rtl"> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;أنشئت<strong> مكتبة العبيكان </strong>لكي تكون منارة للفكر والثقافة تضيء من المملكة العربية السعودية للعالم العربي كله ، وقد تبنت <strong>مكتبة العبيكان</strong> منذ إنشائها نهجا مبنية على تحمل مسؤوليتها الاجتماعية في نشر العلم والثقافة والمعرفة بين أبناء الوطن والمنطقة ، وهذا ما تجلى في إسهامها في عالم النشر والترجمة . إذ بلغت إصداراتها أكثر من ثلاث آلاف عنوان في كافة التخصصات وفروع العلم والمعرفة .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">تقوم بتوزيعها على مستوى العالم العربي عبر وكلائها ومكاتبها المنتشرة في العوالم العربية ، وعبر المشاركة في جميع المعارض الدولية على مستوى العالم . تعد مكتبة العبيكان أحد أكبر المكتبات في العالم العربي والشرق الأوسط ، فهي تمتد إلى </span><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">۲۰</span> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">فرعا في جميع أنحاء المملكة ، تضم أكثر من مئة ألف من العناوين العربية والأجنبية توفرها لكل قارئ أو باحث أو طالب علم ، كما تضم مكتبة متخصصة للطفل تلبي كافة احتياجاتة المعرفية والتربوية .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وقد قامت المكتبة بإتاحة محتوى رقمي يخدم الاحتياجات التعليمية والبحثية والمعرفية للدارسين والباحثين والمثقفين المهتمين بالمحتوى العربي من خلال التطوير المستمر لمكتبة العبيكان الرقمية وقاعدة بيانات إثراء المعارف الرقمية والتي يمكن استخدامها من خلال منصة بحث وواجهات تعامل معيارية ، وآليات الفهرسة والتكشيف وفقا للمعايير الدولية وبما يحقق التكامل المعرفى والتكنولوجي في الوقت نفسه .</span></span></span></h1> </li> </ul>',
                             },
+                                                  
                             {
-                                id:2,
+                                id:6,
                                 content:'<h1 dir="rtl"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وعند اختيار اثراء المعارف الرقمية كما في النافذة التالية</span></span></span></h1> <img class="content_image" src="'+ app.images[7].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">نقوم بكتابة ما نريد البحث عنه&nbsp; في خانة البحث ونختار ما نريد البحث فيه من العلوم الاجتماعية , العلوم الباحتة , الادب والفنون &nbsp;......الخ.</span></span></span></p><img class="content_image" src="'+ app.images[7].img[1] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح النافذة التالية عند اختيار&nbsp; المكتبة المدرسية من قائمة البحث </span></span></span></p><img class="content_image" src="'+ app.images[7].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على الرابط للبحث داخل المكتبة المدرسية&nbsp; حتي الشريحة &nbsp;106 يتم عرض مثال لعرض قصة يوسف وشجرة المانجو وكذلك&nbsp; البحث عن أعمال المؤلف عمر الصاوي وتنزيل نتيجة البحث في صورة </span></span><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;">pdf</span><span dir="RTL" lang="AR-EG"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; للاحتفاظ به على الكمبيوتر الخاص بك</span></span></span></p><img class="content_image" src="'+ app.images[7].img[3] +'">',
-                            },
+                            }
+                        ],
+                        featured:false,
+                    },{
+                        id:21,          
+                        color: 'linear-gradient(to top left, #3366cc 0%, #006699 100%)',
+                        title:' WebEdTV',
+                        pages:[
                             {
-                                id:3,
+                                id:1,
                                 content:'<ul dir="rtl"> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;أنشئت<strong> مكتبة العبيكان </strong>لكي تكون منارة للفكر والثقافة تضيء من المملكة العربية السعودية للعالم العربي كله ، وقد تبنت <strong>مكتبة العبيكان</strong> منذ إنشائها نهجا مبنية على تحمل مسؤوليتها الاجتماعية في نشر العلم والثقافة والمعرفة بين أبناء الوطن والمنطقة ، وهذا ما تجلى في إسهامها في عالم النشر والترجمة . إذ بلغت إصداراتها أكثر من ثلاث آلاف عنوان في كافة التخصصات وفروع العلم والمعرفة .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">تقوم بتوزيعها على مستوى العالم العربي عبر وكلائها ومكاتبها المنتشرة في العوالم العربية ، وعبر المشاركة في جميع المعارض الدولية على مستوى العالم . تعد مكتبة العبيكان أحد أكبر المكتبات في العالم العربي والشرق الأوسط ، فهي تمتد إلى </span><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">۲۰</span> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">فرعا في جميع أنحاء المملكة ، تضم أكثر من مئة ألف من العناوين العربية والأجنبية توفرها لكل قارئ أو باحث أو طالب علم ، كما تضم مكتبة متخصصة للطفل تلبي كافة احتياجاتة المعرفية والتربوية .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وقد قامت المكتبة بإتاحة محتوى رقمي يخدم الاحتياجات التعليمية والبحثية والمعرفية للدارسين والباحثين والمثقفين المهتمين بالمحتوى العربي من خلال التطوير المستمر لمكتبة العبيكان الرقمية وقاعدة بيانات إثراء المعارف الرقمية والتي يمكن استخدامها من خلال منصة بحث وواجهات تعامل معيارية ، وآليات الفهرسة والتكشيف وفقا للمعايير الدولية وبما يحقق التكامل المعرفى والتكنولوجي في الوقت نفسه .</span></span></span></h1> </li> </ul>',
                             },
+                                                  
                             {
-                                id:4,
+                                id:6,
                                 content:'<h1 dir="rtl"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وعند اختيار اثراء المعارف الرقمية كما في النافذة التالية</span></span></span></h1> <img class="content_image" src="'+ app.images[7].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">نقوم بكتابة ما نريد البحث عنه&nbsp; في خانة البحث ونختار ما نريد البحث فيه من العلوم الاجتماعية , العلوم الباحتة , الادب والفنون &nbsp;......الخ.</span></span></span></p><img class="content_image" src="'+ app.images[7].img[1] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح النافذة التالية عند اختيار&nbsp; المكتبة المدرسية من قائمة البحث </span></span></span></p><img class="content_image" src="'+ app.images[7].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على الرابط للبحث داخل المكتبة المدرسية&nbsp; حتي الشريحة &nbsp;106 يتم عرض مثال لعرض قصة يوسف وشجرة المانجو وكذلك&nbsp; البحث عن أعمال المؤلف عمر الصاوي وتنزيل نتيجة البحث في صورة </span></span><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;">pdf</span><span dir="RTL" lang="AR-EG"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; للاحتفاظ به على الكمبيوتر الخاص بك</span></span></span></p><img class="content_image" src="'+ app.images[7].img[3] +'">',
-                            },
+                            }
+                        ],
+                        featured:false,
+                    },{
+                        id:21,          
+                        color: 'linear-gradient(to top left, #3366cc 0%, #006699 100%)',
+                        title:' Curriculum Connect',
+                        pages:[
                             {
-                                id:5,
+                                id:1,
                                 content:'<ul dir="rtl"> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;أنشئت<strong> مكتبة العبيكان </strong>لكي تكون منارة للفكر والثقافة تضيء من المملكة العربية السعودية للعالم العربي كله ، وقد تبنت <strong>مكتبة العبيكان</strong> منذ إنشائها نهجا مبنية على تحمل مسؤوليتها الاجتماعية في نشر العلم والثقافة والمعرفة بين أبناء الوطن والمنطقة ، وهذا ما تجلى في إسهامها في عالم النشر والترجمة . إذ بلغت إصداراتها أكثر من ثلاث آلاف عنوان في كافة التخصصات وفروع العلم والمعرفة .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">تقوم بتوزيعها على مستوى العالم العربي عبر وكلائها ومكاتبها المنتشرة في العوالم العربية ، وعبر المشاركة في جميع المعارض الدولية على مستوى العالم . تعد مكتبة العبيكان أحد أكبر المكتبات في العالم العربي والشرق الأوسط ، فهي تمتد إلى </span><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">۲۰</span> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">فرعا في جميع أنحاء المملكة ، تضم أكثر من مئة ألف من العناوين العربية والأجنبية توفرها لكل قارئ أو باحث أو طالب علم ، كما تضم مكتبة متخصصة للطفل تلبي كافة احتياجاتة المعرفية والتربوية .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وقد قامت المكتبة بإتاحة محتوى رقمي يخدم الاحتياجات التعليمية والبحثية والمعرفية للدارسين والباحثين والمثقفين المهتمين بالمحتوى العربي من خلال التطوير المستمر لمكتبة العبيكان الرقمية وقاعدة بيانات إثراء المعارف الرقمية والتي يمكن استخدامها من خلال منصة بحث وواجهات تعامل معيارية ، وآليات الفهرسة والتكشيف وفقا للمعايير الدولية وبما يحقق التكامل المعرفى والتكنولوجي في الوقت نفسه .</span></span></span></h1> </li> </ul>',
                             },
+                                                  
+                            {
+                                id:6,
+                                content:'<h1 dir="rtl"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وعند اختيار اثراء المعارف الرقمية كما في النافذة التالية</span></span></span></h1> <img class="content_image" src="'+ app.images[7].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">نقوم بكتابة ما نريد البحث عنه&nbsp; في خانة البحث ونختار ما نريد البحث فيه من العلوم الاجتماعية , العلوم الباحتة , الادب والفنون &nbsp;......الخ.</span></span></span></p><img class="content_image" src="'+ app.images[7].img[1] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح النافذة التالية عند اختيار&nbsp; المكتبة المدرسية من قائمة البحث </span></span></span></p><img class="content_image" src="'+ app.images[7].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على الرابط للبحث داخل المكتبة المدرسية&nbsp; حتي الشريحة &nbsp;106 يتم عرض مثال لعرض قصة يوسف وشجرة المانجو وكذلك&nbsp; البحث عن أعمال المؤلف عمر الصاوي وتنزيل نتيجة البحث في صورة </span></span><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;">pdf</span><span dir="RTL" lang="AR-EG"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; للاحتفاظ به على الكمبيوتر الخاص بك</span></span></span></p><img class="content_image" src="'+ app.images[7].img[3] +'">',
+                            }
+                        ],
+                        featured:false,
+                    },{
+                        id:21,          
+                        color: 'linear-gradient(to top left, #3366cc 0%, #006699 100%)',
+                        title:' مجتمع- DEN',
+                        pages:[
+                            {
+                                id:1,
+                                content:'<ul dir="rtl"> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;أنشئت<strong> مكتبة العبيكان </strong>لكي تكون منارة للفكر والثقافة تضيء من المملكة العربية السعودية للعالم العربي كله ، وقد تبنت <strong>مكتبة العبيكان</strong> منذ إنشائها نهجا مبنية على تحمل مسؤوليتها الاجتماعية في نشر العلم والثقافة والمعرفة بين أبناء الوطن والمنطقة ، وهذا ما تجلى في إسهامها في عالم النشر والترجمة . إذ بلغت إصداراتها أكثر من ثلاث آلاف عنوان في كافة التخصصات وفروع العلم والمعرفة .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">تقوم بتوزيعها على مستوى العالم العربي عبر وكلائها ومكاتبها المنتشرة في العوالم العربية ، وعبر المشاركة في جميع المعارض الدولية على مستوى العالم . تعد مكتبة العبيكان أحد أكبر المكتبات في العالم العربي والشرق الأوسط ، فهي تمتد إلى </span><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">۲۰</span> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">فرعا في جميع أنحاء المملكة ، تضم أكثر من مئة ألف من العناوين العربية والأجنبية توفرها لكل قارئ أو باحث أو طالب علم ، كما تضم مكتبة متخصصة للطفل تلبي كافة احتياجاتة المعرفية والتربوية .</span></span></span></h1> </li> <li> <h1><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وقد قامت المكتبة بإتاحة محتوى رقمي يخدم الاحتياجات التعليمية والبحثية والمعرفية للدارسين والباحثين والمثقفين المهتمين بالمحتوى العربي من خلال التطوير المستمر لمكتبة العبيكان الرقمية وقاعدة بيانات إثراء المعارف الرقمية والتي يمكن استخدامها من خلال منصة بحث وواجهات تعامل معيارية ، وآليات الفهرسة والتكشيف وفقا للمعايير الدولية وبما يحقق التكامل المعرفى والتكنولوجي في الوقت نفسه .</span></span></span></h1> </li> </ul>',
+                            },
+                                                  
                             {
                                 id:6,
                                 content:'<h1 dir="rtl"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">وعند اختيار اثراء المعارف الرقمية كما في النافذة التالية</span></span></span></h1> <img class="content_image" src="'+ app.images[7].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">نقوم بكتابة ما نريد البحث عنه&nbsp; في خانة البحث ونختار ما نريد البحث فيه من العلوم الاجتماعية , العلوم الباحتة , الادب والفنون &nbsp;......الخ.</span></span></span></p><img class="content_image" src="'+ app.images[7].img[1] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">توضح النافذة التالية عند اختيار&nbsp; المكتبة المدرسية من قائمة البحث </span></span></span></p><img class="content_image" src="'+ app.images[7].img[2] +'"><p dir="RTL" style="text-align:right"><span style="font-size:16px"><span dir="RTL" lang="AR-SA"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على الرابط للبحث داخل المكتبة المدرسية&nbsp; حتي الشريحة &nbsp;106 يتم عرض مثال لعرض قصة يوسف وشجرة المانجو وكذلك&nbsp; البحث عن أعمال المؤلف عمر الصاوي وتنزيل نتيجة البحث في صورة </span></span><span style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;">pdf</span><span dir="RTL" lang="AR-EG"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp; للاحتفاظ به على الكمبيوتر الخاص بك</span></span></span></p><img class="content_image" src="'+ app.images[7].img[3] +'">',
