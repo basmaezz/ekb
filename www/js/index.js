@@ -720,8 +720,7 @@ app.content = [
                                     }
                                 ],
                                 featured:false,
-                            } 
-                          
+                            }                           
                         ],
                     }, {
                         id:6,
@@ -730,10 +729,10 @@ app.content = [
                         parent_topic: true,
                         child_topics: [
                             {
-                                id:5,          
+                                id:6,          
                                 title:' الرئيسيه',
                                 color:'#4285F4',
-                                pages:[ ],
+                                pages:[],
                                 featured:false,
                             }                          
                         ],
@@ -831,16 +830,16 @@ app.content = [
             }, {
                 id:5,
                 icon:"img/child.svg",
-                name:' بوابه الآطفال',
+                name:' بوابه الأطفال',
                 topics:[
                     {
-                        id:16,
+                        id:10,
                         color:'#3231cc',
-                        title:'نيذه عن بوابة الأطفال',
+                        title:' بوابة الأطفال',
                         pages:[
                             {
                                 id:1,
-                                content:'<ul dir="rtl"> <li style="text-align: right;"><strong><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;"><span style="color:#4f81bd">يمكن للآباء الاستفادة من بنك المعرفة من خلال تعليم صغارهم عبر بوابة مخصصة للأطفال , تحت عنوان بوابة الاطفال فهي متاحة ضمن اختيارات التسجيل .</span></span></span></span></strong></li> <li style="text-align: right;"><strong><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;"><span style="color:#4f81bd">يمكن من خلالها إيصال المعلومات إلى أطفالك بطريقة تفاعلية, حيث تتيح البوابة نظام بسيط للتعامل مع الأطفال , كما أنها مدعمة بالوسائل البصرية والسمعية</span></span></span></span></strong></li> <li style="text-align: right;"><strong><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;"><span style="color:#4f81bd">. كما تحتوي على العديد من الأدوات المساعدة للآباء لتعليم أبنائهم.يمكن للآباء الاستفادة من بنك المعرفة من خلال تعليم صغارهم عبر بوابة مخصصة للأطفال , تحت عنوان بوابة الاطفال فهي متاحة ضمن اختيارات التسجيل .</span></span></span></span></strong></li> <li style="text-align: right;"><strong><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;"><span style="color:#4f81bd">يمكن من خلالها إيصال المعلومات إلى أطفالك بطريقة تفاعلية, حيث تتيح البوابة نظام بسيط للتعامل مع الأطفال , كما أنها مدعمة بالوسائل البصرية والسمعية. كما تحتوي على العديد من الأدوات المساعدة للآباء لتعليم أبنائهم.</span></span></span></span></strong></li> </ul></p><img class="content_image" src="'+ app.images[4].img[0] +'">',
+                                content:'<ul dir="rtl"> <li style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">يمكن للآباء الاستفادة من بنك المعرفة من خلال تعليم صغارهم عبر بوابة مخصصة للأطفال , تحت عنوان بوابة الاطفال فهي متاحة ضمن اختيارات التسجيل .</span></span></span></li> <li style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">يمكن من خلالها إيصال المعلومات إلى أطفالك بطريقة تفاعلية, حيث تتيح البوابة نظام بسيط للتعامل مع الأطفال , كما أنها مدعمة بالوسائل البصرية والسمعية</span></span></span></li> <li style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">. كما تحتوي على العديد من الأدوات المساعدة للآباء لتعليم أبنائهم.يمكن للآباء الاستفادة من بنك المعرفة من خلال تعليم صغارهم عبر بوابة مخصصة للأطفال , تحت عنوان بوابة الاطفال فهي متاحة ضمن اختيارات التسجيل .</span></span></span></li> <li style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">مكن من خلالها إيصال المعلومات إلى أطفالك بطريقة تفاعلية, حيث تتيح البوابة نظام بسيط للتعامل مع الأطفال , كما أنها مدعمة بالوسائل البصرية والسمعية. كما تحتوي على العديد من الأدوات المساعدة للآباء لتعليم أبنائهم.</span></span></span></li> </ul> <p>&nbsp;</p> <p><img class="content_image" src="'+ app.images[4].img[0] +'" /></p>',
                             }],
                         featured:true,
                     }
