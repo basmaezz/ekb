@@ -673,6 +673,140 @@ app.content = [
                             }    
                           
                         ],
+                    },
+                    {
+                        id:6,
+                        title:'  Britannica',
+                        color:'#4285F4',
+                        parent_topic: true,
+                        child_topics: [
+                            {
+                                id:5,          
+                                title:' الرئيسيه',
+                                color:'#4285F4',
+                                pages:[
+                                    {
+                                        id:1,
+                                        content:'<p dir="rtl" style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">المصدر </span><strong>Discovery education</strong> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;يوفر محتوى&nbsp; تعليمي مناسب للمناهج الدراسية للمراحل التعليمية المختلفة ( ابتدائي - اعدادي - ثانوی )</span></span></span></p><img class="content_image" src="'+ app.images[2].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">للبحث نذهب الى مربع النص أعلى النافذة ثم نقوم بكتابة اي عنوان &nbsp;تريد البحث &nbsp;عنه مثلا </span>&nbsp;&nbsp;&nbsp;scarecrow <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">ثم الضغط على بحث لتظهر</span></span></span><span dir="RTL" lang="AR-JO" style="font-size:11.0pt"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;نتائج البحث كما يوجد امكانية لفرز النتائج علي حسب المرحلة الدراسية أو&nbsp; نوع المورد سواء كان مقطع فيديو أو فيديو أو صورة </span></span></p><img class="content_image" src="'+ app.images[2].img[1] +'">',
+                                    },{
+                                        id:2,
+                                        content:'<p dir="RTL" style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على احدى &nbsp;نتائج البحث سوف يقوم بعرض الفيديو من نتيجة البحث المختار</span></span></span><span dir="RTL" lang="AR-JO" style="font-size:11.0pt"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;"> </span></span></p><img class="content_image" src="'+ app.images[2].img[3] +'"><p dir="RTL" style="text-align:right"><span dir="RTL" lang="AR-JO" style="font-size:11.0pt"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">كما انه يمكن مشاركة على &nbsp;مواقع التواصل الاجتماعى او ارساله عبر الميل </span></span></p><img class="content_image" src="'+ app.images[2].img[4] +'">',
+
+                                    }
+                                ],
+                                featured:false,
+                            } 
+                          
+                        ],
+                    },
+                    {
+                        id:7,
+                        title:' العبيكان',
+                        color:'#4285F4',
+                        parent_topic: true,
+                        child_topics: [
+                            {
+                                id:5,          
+                                title:' الرئيسيه',
+                                color:'#4285F4',
+                                pages:[
+                                    {
+                                        id:1,
+                                        content:'<p dir="rtl" style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">المصدر </span><strong>Discovery education</strong> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;يوفر محتوى&nbsp; تعليمي مناسب للمناهج الدراسية للمراحل التعليمية المختلفة ( ابتدائي - اعدادي - ثانوی )</span></span></span></p><img class="content_image" src="'+ app.images[2].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">للبحث نذهب الى مربع النص أعلى النافذة ثم نقوم بكتابة اي عنوان &nbsp;تريد البحث &nbsp;عنه مثلا </span>&nbsp;&nbsp;&nbsp;scarecrow <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">ثم الضغط على بحث لتظهر</span></span></span><span dir="RTL" lang="AR-JO" style="font-size:11.0pt"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;نتائج البحث كما يوجد امكانية لفرز النتائج علي حسب المرحلة الدراسية أو&nbsp; نوع المورد سواء كان مقطع فيديو أو فيديو أو صورة </span></span></p><img class="content_image" src="'+ app.images[2].img[1] +'">',
+                                    },{
+                                        id:2,
+                                        content:'<p dir="RTL" style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على احدى &nbsp;نتائج البحث سوف يقوم بعرض الفيديو من نتيجة البحث المختار</span></span></span><span dir="RTL" lang="AR-JO" style="font-size:11.0pt"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;"> </span></span></p><img class="content_image" src="'+ app.images[2].img[3] +'"><p dir="RTL" style="text-align:right"><span dir="RTL" lang="AR-JO" style="font-size:11.0pt"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">كما انه يمكن مشاركة على &nbsp;مواقع التواصل الاجتماعى او ارساله عبر الميل </span></span></p><img class="content_image" src="'+ app.images[2].img[4] +'">',
+
+                                    }
+                                ],
+                                featured:false,
+                            } 
+                          
+                        ],
+                    }, {
+                        id:6,
+                        title:' Atomic Traning',
+                        color:'#4285F4',
+                        parent_topic: true,
+                        child_topics: [
+                            {
+                                id:5,          
+                                title:' الرئيسيه',
+                                color:'#4285F4',
+                                pages:[ ],
+                                featured:false,
+                            }                          
+                        ],
+                    }, {
+                        id:7,
+                        title:'الجمعيه الملكيه الأمريكيه',
+                        color:'#4285F4',
+                        parent_topic: true,
+                        child_topics: [
+                            {
+                                id:5,          
+                                title:' الرئيسيه',
+                                color:'#4285F4',
+                                pages:[ ],
+                                featured:false,
+                            }                          
+                        ],
+                    }, {
+                        id:7,
+                        title:' Learn chemistry',
+                        color:'#4285F4',
+                        parent_topic: true,
+                        child_topics: [
+                            {
+                                id:5,          
+                                title:' الرئيسيه',
+                                color:'#4285F4',
+                                pages:[ ],
+                                featured:false,
+                            }                          
+                        ],
+                    }, {
+                        id:7,
+                        title:' Me book',
+                        color:'#4285F4',
+                        parent_topic: true,
+                        child_topics: [
+                            {
+                                id:5,          
+                                title:' الرئيسيه',
+                                color:'#4285F4',
+                                pages:[ ],
+                                featured:false,
+                            }                          
+                        ],
+                    }, {
+                        id:7,
+                        title:' OneClickDigital',
+                        color:'#4285F4',
+                        parent_topic: true,
+                        child_topics: [
+                            {
+                                id:5,          
+                                title:' الرئيسيه',
+                                color:'#4285F4',
+                                pages:[ ],
+                                featured:false,
+                            }                          
+                        ],
+                    }, {
+                        id:7,
+                        title:' National Geographic',
+                        color:'#4285F4',
+                        parent_topic: true,
+                        child_topics: [
+                            {
+                                id:5,          
+                                title:' الرئيسيه',
+                                color:'#4285F4',
+                                pages:[ ],
+                                featured:false,
+                            }                          
+                        ],
                     }
                 ],
             },{
