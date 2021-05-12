@@ -179,6 +179,95 @@ app.get_topic_content = function(topic_id){
         $('#topic .content_wrapper').html('<div class="no_results">Sorry, No results found</div>')
     }
 }
+app.get_child_topic_content = function(parent_id,child_topic_id){
+    var self = this
+    // console.log('here we start')
+    var data = self.content
+    if (data){
+        // var categordata[0]
+        for (var i = 0; i < data.length; i++) {
+            var category = data[i];
+            for (let x = 0; x < category.topics.length; x++) {
+                const parent_topic = category.topics[x];
+                if( parent_topic.id == parent_id){
+                    if (parent_topic.parent_topic){
+                        for (let i = 0; i < parent_topic.child_topics.length; i++) {
+                            const child_topic = parent_topic.child_topics.length[i];                       
+                        
+                            if(child_topic.id == child_topic_id){
+                                var content_html = ''
+                                // console.log(child_topic.pages)
+                                self.active_topic = {'id':child_topic.id,'title':child_topic.title,'parent_topic':child_topic.parent_topic,'child_topics':child_topic.child_topics}
+                                    if(child_topic.pages.length > 1){
+                                        self.active_topic.pages = child_topic.pages
+                                        content_html += self.active_topic.pages[0].content
+                                        // console.log(content_html)
+                                        $('#topic .content_wrapper').html(content_html)
+                                        self.active_page_number = 0
+                                        $('#topic .page__content').append('<div class="topic_nav_wrapper"><div class="nav_btn_wrapper"><div class="topic_nav_btn prev hidden">السابق</div></div><div class="nav_btn_wrapper"><div class="topic_nav_btn next">التالي</div></div> </div>')    
+                                    } else{
+                                        // content_html += 'nothing found'
+                                        self.active_topic.pages = child_topic.pages
+                                        content_html += self.active_topic.pages[0].content
+                                        // console.log(content_html)
+                                        $('#topic .content_wrapper').html(content_html)
+                                        self.active_page_number = 0
+                                        $('#topic .content_wrapper').html(content_html)
+                                    }    
+                            }
+                        }
+                    } else {
+                            // console.log(topic)
+                            // console.log(topic.pages)
+                            // console.log(topic)
+                            var content_html = ''
+                            self.active_topic = {'id':topic.id,'title':topic.title,'parent_topic':topic.parent_topic,'child_topics':topic.child_topics}
+                            // console.log(self.active_topic)
+                            if (!self.active_topic.parent_topic){
+                                if(topic.pages.length > 1){
+                                    console.log('we have pages')
+                                    // console.log(topic.pages)
+                                    self.active_topic.pages = topic.pages
+                                    // console.log(self.active_topic.pages)
+                                    // for (let i = 0; i < topic.pages.length; i++) {
+                                    //     const page = topic.pages[i];
+                                    //     self.active_topic.pages.push({'page_id': page.id, 'page_content': page.content})
+                                    // }
+                                    content_html += self.active_topic.pages[0].content
+                                    // console.log(content_html)
+                                    $('#topic .content_wrapper').html(content_html)
+                                    self.active_page_number = 0
+                                    $('#topic .page__content').append('<div class="topic_nav_wrapper"><div class="nav_btn_wrapper"><div class="topic_nav_btn prev hidden">السابق</div></div><div class="nav_btn_wrapper"><div class="topic_nav_btn next">التالي</div></div> </div>')    
+                                } else{
+                                    // console.log('we have pages')
+                                    // console.log(topic.pages)
+                                    self.active_topic.pages = topic.pages
+                                    // console.log(self.active_topic.pages)
+                                    // for (let i = 0; i < topic.pages.length; i++) {
+                                    //     const page = topic.pages[i];
+                                    //     self.active_topic.pages.push({'page_id': page.id, 'page_content': page.content})
+                                    // }
+                                    content_html += self.active_topic.pages[0].content
+                                    // console.log(content_html)
+                                    $('#topic .content_wrapper').html(content_html)
+                                    self.active_page_number = 0
+                                }    
+                            } else {
+                                for (let i = 0; i < self.active_topic.child_topics.length; i++) {
+                                    const topic = self.active_topic.child_topics[i];
+                                    
+                                }
+                            }
+                    }
+                }
+                // console.log(content_html)
+            }
+        }
+        // console.log(content_html)
+    } else {
+        $('#topic .content_wrapper').html('<div class="no_results">Sorry, No results found</div>')
+    }
+}
 app.click_topic_next_page = function(){
     // var content_html = app.cont
     if (app.active_topic.pages.length > 1){
@@ -379,6 +468,7 @@ app.onDeviceReady = (function(_super) {
                     data:{
                         id: $(this).find('ons-card').attr('data-topic-id'),
                         title: $(this).find('ons-card').attr('data-topic-title'),
+                        parent_id:$(this).find('ons-card').attr('data-parent-topic-id'),
                     }
                 })
                 // console.log($(this).find('ons-card').attr('data-topic-title'))
@@ -613,17 +703,31 @@ app.content = [
                                 pages:[
                                     {
                                         id:1,
-                                        content:'<p dir="rtl" style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">المصدر </span><strong>Discovery education</strong> <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;يوفر محتوى&nbsp; تعليمي مناسب للمناهج الدراسية للمراحل التعليمية المختلفة ( ابتدائي - اعدادي - ثانوی )</span></span></span></p><img class="content_image" src="'+ app.images[2].img[0] +'"><p dir="RTL" style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">للبحث نذهب الى مربع النص أعلى النافذة ثم نقوم بكتابة اي عنوان &nbsp;تريد البحث &nbsp;عنه مثلا </span>&nbsp;&nbsp;&nbsp;scarecrow <span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">ثم الضغط على بحث لتظهر</span></span></span><span dir="RTL" lang="AR-JO" style="font-size:11.0pt"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">&nbsp;نتائج البحث كما يوجد امكانية لفرز النتائج علي حسب المرحلة الدراسية أو&nbsp; نوع المورد سواء كان مقطع فيديو أو فيديو أو صورة </span></span></p><img class="content_image" src="'+ app.images[2].img[1] +'">',
+                                        content:'main',
                                     },{
                                         id:2,
-                                        content:'<p dir="RTL" style="text-align:right"><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">عند الضغط على احدى &nbsp;نتائج البحث سوف يقوم بعرض الفيديو من نتيجة البحث المختار</span></span></span><span dir="RTL" lang="AR-JO" style="font-size:11.0pt"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;"> </span></span></p><img class="content_image" src="'+ app.images[2].img[3] +'"><p dir="RTL" style="text-align:right"><span dir="RTL" lang="AR-JO" style="font-size:11.0pt"><span style="font-family:&quot;Arial&quot;,&quot;sans-serif&quot;">كما انه يمكن مشاركة على &nbsp;مواقع التواصل الاجتماعى او ارساله عبر الميل </span></span></p><img class="content_image" src="'+ app.images[2].img[4] +'">',
-
+                                        content:'main2',
                                     }
                                 ],
                                 featured:false,
                             }, 
                             {
                                 id:6,          
+                                title:' الرئيسيه',
+                                color:'#4285F4',
+                                pages:[
+                                    {
+                                        id:1,
+                                        content:'main3',
+                                    },{
+                                        id:2,
+                                        content:'main2',
+                                    }
+                                ],
+                                featured:false,
+                            },
+                            {
+                                id:7,          
                                 title:' WebEdTV',
                                 color:'#4285F4',
                                 pages:[
