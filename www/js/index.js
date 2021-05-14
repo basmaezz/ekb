@@ -84,94 +84,30 @@ app.get_category_topics = function(category_id){
             }
         }
         // console.log(topics_html)
-        $('.topics_wrapper').html(topics_html)
+        $('#category .topics_wrapper').html(topics_html)
     } else {
-        $('.topics_wrapper').html('<div class="no_results">Sorry, No results found</div>')
+        $('#category .topics_wrapper').html('<div class="no_results">Sorry, No results found</div>')
     }
 }
 //////////
 
-app.get_topic_content = function(topic_id){
+app.get_topic_content = function(params){
     var self = this
     // console.log('here we start')
     var data = self.content
+    var category_id = params.category_id
+    var parent_topic_id = params.parent_topic_id
+    var topic_id = params.topic_id
     if (data){
         // var categordata[0]
         for (var i = 0; i < data.length; i++) {
             var category = data[i];
-            for (let x = 0; x < category.topics.length; x++) {
-                const topic = category.topics[x];
-                if( topic.id == topic_id){
-                    if (topic.parent_topic){
-                        for (let t = 0; t < topic.child_topics.length; t++) {
-                            const child_topic = topic.child_topics[t];
-                            if(child_topic.id == topic_id){
-                                var content_html = ''
-                                // console.log(child_topic.pages)
-                                self.active_topic = {'id':child_topic.id,'title':child_topic.title,'parent_topic':child_topic.parent_topic,'child_topics':child_topic.child_topics}
-                                    if(child_topic.pages.length > 1){
-                                        self.active_topic.pages = child_topic.pages
-                                        content_html += self.active_topic.pages[0].content
-                                        // console.log(content_html)
-                                        $('#topic .content_wrapper').html(content_html)
-                                        self.active_page_number = 0
-                                        $('#topic .page__content').append('<div class="topic_nav_wrapper"><div class="nav_btn_wrapper"><div class="topic_nav_btn prev hidden">السابق</div></div><div class="nav_btn_wrapper"><div class="topic_nav_btn next">التالي</div></div> </div>')    
-                                    } else{
-                                        // content_html += 'nothing found'
-                                        self.active_topic.pages = child_topic.pages
-                                        content_html += self.active_topic.pages[0].content
-                                        // console.log(content_html)
-                                        $('#topic .content_wrapper').html(content_html)
-                                        self.active_page_number = 0
-                                        $('#topic .content_wrapper').html(content_html)
-                                    }    
-                            }
-                        }
-                    } else {
-                            // console.log(topic)
-                            // console.log(topic.pages)
-                            // console.log(topic)
-                            var content_html = ''
-                            self.active_topic = {'id':topic.id,'title':topic.title,'parent_topic':topic.parent_topic,'child_topics':topic.child_topics}
-                            // console.log(self.active_topic)
-                            if (!self.active_topic.parent_topic){
-                                if(topic.pages.length > 1){
-                                    console.log('we have pages')
-                                    // console.log(topic.pages)
-                                    self.active_topic.pages = topic.pages
-                                    // console.log(self.active_topic.pages)
-                                    // for (let i = 0; i < topic.pages.length; i++) {
-                                    //     const page = topic.pages[i];
-                                    //     self.active_topic.pages.push({'page_id': page.id, 'page_content': page.content})
-                                    // }
-                                    content_html += self.active_topic.pages[0].content
-                                    // console.log(content_html)
-                                    $('#topic .content_wrapper').html(content_html)
-                                    self.active_page_number = 0
-                                    $('#topic .page__content').append('<div class="topic_nav_wrapper"><div class="nav_btn_wrapper"><div class="topic_nav_btn prev hidden">السابق</div></div><div class="nav_btn_wrapper"><div class="topic_nav_btn next">التالي</div></div> </div>')    
-                                } else{
-                                    // console.log('we have pages')
-                                    // console.log(topic.pages)
-                                    self.active_topic.pages = topic.pages
-                                    // console.log(self.active_topic.pages)
-                                    // for (let i = 0; i < topic.pages.length; i++) {
-                                    //     const page = topic.pages[i];
-                                    //     self.active_topic.pages.push({'page_id': page.id, 'page_content': page.content})
-                                    // }
-                                    content_html += self.active_topic.pages[0].content
-                                    // console.log(content_html)
-                                    $('#topic .content_wrapper').html(content_html)
-                                    self.active_page_number = 0
-                                }    
-                            } else {
-                                for (let i = 0; i < self.active_topic.child_topics.length; i++) {
-                                    const topic = self.active_topic.child_topics[i];
-                                    
-                                }
-                            }
-                    }
+            if ( category.id == category_id){
+                if ( parent_topic_id != undefined){
+                    console.log(parent_topic_id)
+                } else {
+                    console.log('no parent')
                 }
-                // console.log(content_html)
             }
         }
         // console.log(content_html)
@@ -393,18 +329,10 @@ app.get_child_topics = function(category_id, topic_id){
                         for (let i = 0; i < topic.child_topics.length; i++) {
                             const child_topic = topic.child_topics[i];
                             if(child_topic.color){
-                                if (child_topic.parent_topic){
-                                    topics_html += '<div  class="topic_wrapper parent_topic" ><ons-card style=" color:white;background:'+child_topic.color+'" data-topic-id="'+child_topic.id+'" data-topic-title="'+child_topic.title+'">'+ child_topic.title +'</ons-card></div>'
-                                } else {
-                                    topics_html += '<div  class="topic_wrapper" ><ons-card style=" color:white;background:'+child_topic.color+'" data-topic-id="'+child_topic.id+'" data-topic-title="'+child_topic.title+'">'+ child_topic.title +'</ons-card></div>'
-                                }
+                                    topics_html += '<div  class="topic_wrapper" ><ons-card style=" color:white;background:'+child_topic.color+'"  data-category-id="'+category_id+'" data-parent-topic-id="'+topic_id+'" data-topic-id="'+child_topic.id+'" data-topic-title="'+child_topic.title+'">'+ child_topic.title +'</ons-card></div>'
                                 // console.log(topic.color)
                             } else {
-                                if (child_topic.parent_topic){
-                                    topics_html += '<div class="topic_wrapper parent_topic" ><ons-card data-topic-id="'+child_topic.id+'" data-topic-title="'+child_topic.title+'">'+ child_topic.title +'</ons-card></div>'
-                                } else {
-                                    topics_html += '<div class="topic_wrapper" ><ons-card data-topic-id="'+child_topic.id+'" data-topic-title="'+child_topic.title+'">'+ child_topic.title +'</ons-card></div>'
-                                }
+                                    topics_html += '<div class="topic_wrapper" ><ons-card  data-category-id="'+category_id+'" data-parent-topic-id="'+topic_id+'" data-topic-id="'+topic.id+'" data-topic-title="'+child_topic.title+'">'+ child_topic.title +'</ons-card></div>'
                             }       
                         }
                     }
@@ -438,7 +366,7 @@ app.onDeviceReady = (function(_super) {
                 var category_id = ekbNav.topPage.data.category_id
                 var topic_id = ekbNav.topPage.data.id
                 var title = ekbNav.topPage.data.title
-                $('#parent_topic .toolbar__title').html(ekbNav.topPage.data.title)
+                $('#parent_topic .toolbar__title').html(title)
                 app.get_child_topics(category_id, topic_id)
             }
         }, false);
@@ -446,10 +374,17 @@ app.onDeviceReady = (function(_super) {
             if (event.target.matches('#topic')) {
                 // console.log(ekbNav.topPage.data.category_name)
                 var category_id = ekbNav.topPage.data.category_id
+                var parent_topic_id = ekbNav.topPage.data.parent_topic_id
                 var topic_id = ekbNav.topPage.data.id
                 var title = ekbNav.topPage.data.title
-                $('#topic .toolbar__title').html(ekbNav.topPage.data.title)
-                app.get_topic_content(topic_id)
+                $('#topic .toolbar__title').html(title)
+                var params = {
+                    category_id : category_id,
+                    parent_topic_id : parent_topic_id,
+                    topic_id : topic_id 
+                }
+                console.log(params)
+                app.get_topic_content(params)
             }
         }, false);        
         $(document).on('click','.topic_wrapper', function(){
@@ -468,7 +403,8 @@ app.onDeviceReady = (function(_super) {
                     data:{
                         id: $(this).find('ons-card').attr('data-topic-id'),
                         title: $(this).find('ons-card').attr('data-topic-title'),
-                        parent_id:$(this).find('ons-card').attr('data-parent-topic-id'),
+                        category_id: $(this).find('ons-card').attr('data-category-id'),
+                        parent_topic_id:$(this).find('ons-card').attr('data-parent-topic-id'),
                     }
                 })
                 // console.log($(this).find('ons-card').attr('data-topic-title'))
